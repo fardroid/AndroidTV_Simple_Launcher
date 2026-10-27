@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_watch_label">Simple TV launcher: кнопка Home</string>
+    <string name="home_watch_description">Открывает лаунчер по кнопке Home и всякий раз, когда на экран выходит стандартный главный экран Google TV. Ничего не читает и никуда не отправляет.</string>
+</resources>

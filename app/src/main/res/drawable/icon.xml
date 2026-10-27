@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Simple TV launcher mark (the same as Simple LG launcher's): a frosted card with a clock over a row of apps, the chosen one larger. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="96dp" android:height="96dp"
+    android:viewportWidth="512" android:viewportHeight="512">
+    <path android:pathData="M112,0 H400 A112,112 0 0 1 512,112 V400 A112,112 0 0 1 400,512 H112 A112,112 0 0 1 0,400 V112 A112,112 0 0 1 112,0 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="0" android:startY="0" android:endX="128" android:endY="512">
+                <item android:offset="0" android:color="#FF181B36" />
+                <item android:offset="0.58" android:color="#FF3A3365" />
+                <item android:offset="1" android:color="#FFE0906A" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.17" android:pathData="M124,80 H388 A44,44 0 0 1 432,124 V236 A44,44 0 0 1 388,280 H124 A44,44 0 0 1 80,236 V124 A44,44 0 0 1 124,80 Z" />
+    <path android:strokeColor="#FFFFFF" android:strokeAlpha="0.25" android:strokeWidth="3" android:pathData="M124.0,81.5 H388.0 A42.5,42.5 0 0 1 430.5,124.0 V236.0 A42.5,42.5 0 0 1 388.0,278.5 H124.0 A42.5,42.5 0 0 1 81.5,236.0 V124.0 A42.5,42.5 0 0 1 124.0,81.5 Z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="14" android:pathData="M124,180 A50,50 0 1 1 224,180 A50,50 0 1 1 124,180 Z" />
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="14" android:strokeLineCap="round" android:strokeLineJoin="round" android:pathData="M174,150 V180 L196,194" />
+    <path android:fillColor="#FFFFFF" android:pathData="M262,150 H374 A10,10 0 0 1 384,160 V160 A10,10 0 0 1 374,170 H262 A10,10 0 0 1 252,160 V160 A10,10 0 0 1 262,150 Z" />
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.55" android:pathData="M262,192 H330 A10,10 0 0 1 340,202 V202 A10,10 0 0 1 330,212 H262 A10,10 0 0 1 252,202 V202 A10,10 0 0 1 262,192 Z" />
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.28" android:pathData="M106,340 H150 A26,26 0 0 1 176,366 V410 A26,26 0 0 1 150,436 H106 A26,26 0 0 1 80,410 V366 A26,26 0 0 1 106,340 Z" />
+    <path android:fillColor="#FFFFFF" android:fillAlpha="0.28" android:pathData="M362,340 H406 A26,26 0 0 1 432,366 V410 A26,26 0 0 1 406,436 H362 A26,26 0 0 1 336,410 V366 A26,26 0 0 1 362,340 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M228,320 H284 A30,30 0 0 1 314,350 V406 A30,30 0 0 1 284,436 H228 A30,30 0 0 1 198,406 V350 A30,30 0 0 1 228,320 Z" />
+</vector>
