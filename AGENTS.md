@@ -44,17 +44,17 @@ This makes `app/build/outputs/apk/debug/app-debug.apk`.
 
 ```bash
 adb -s BOX:5555 install -r app/build/outputs/apk/debug/app-debug.apk
-adb -s BOX:5555 shell am start -n tld.my.hearth/.MainActivity
+adb -s BOX:5555 shell am start -n tld.my.simpletv/.MainActivity
 ```
 
-The person should now see the launcher. Undo: `adb -s BOX:5555 uninstall tld.my.hearth`.
+The person should now see the launcher. Undo: `adb -s BOX:5555 uninstall tld.my.simpletv`.
 
 ## 5. Make it the home screen (the person does it on the box)
 
 1. In the launcher: the last tile on the row (*Launcher settings*) → Home screen → *Launcher by default* → OK opens the box's choice of home app; pick *Simple TV launcher*.
 2. On Google TV the Home button still goes to Google's own home screen. OK on *Launcher by default* again opens Accessibility; the person switches on *Simple TV launcher* there (it is the Home button helper; it reads nothing on screen).
 
-Check with `adb -s BOX:5555 shell settings get secure enabled_accessibility_services` (it should name `tld.my.hearth/tld.my.hearth.HomeWatchService` on Google TV), then ask the person to press Home. *Launcher by default* shows *Yes* when the Home button opens the launcher.
+Check with `adb -s BOX:5555 shell settings get secure enabled_accessibility_services` (it should name `tld.my.simpletv/.HomeWatchService` on Google TV), then ask the person to press Home. *Launcher by default* shows *Yes* when the Home button opens the launcher.
 
 Tell the person that Android switches the helper off whenever the launcher is updated (step 4 again), so it has to be switched on again after an update.
 
@@ -65,7 +65,7 @@ Do not switch off the stock home screen (`pm disable-user … launcherx`) on you
 Ask for the links: in Google Calendar on a computer, Settings → the calendar → *Secret address in iCal format*. They start with `https://calendar.google.com/calendar/ical/` and end in `basic.ics`. Hand them to the launcher straight from the shell, without saving them in a file:
 
 ```bash
-adb -s BOX:5555 shell am start -n tld.my.hearth/.MainActivity --esa calendars "<link 1>,<link 2>"
+adb -s BOX:5555 shell am start -n tld.my.simpletv/.MainActivity --esa calendars "<link 1>,<link 2>"
 ```
 
 The calendar card appears within a few seconds. Undo: Settings → Widgets → Calendars → OK on a calendar → *Remove the calendar*.
@@ -75,10 +75,10 @@ The calendar card appears within a few seconds. Undo: Settings → Widgets → C
 Thirteen pictures are built in. The person's own (JPG, PNG or WebP, 1920×1080 or larger) go to the launcher's folder:
 
 ```bash
-adb -s BOX:5555 push <pictures> /sdcard/Android/data/tld.my.hearth/files/wallpapers/
+adb -s BOX:5555 push <pictures> /sdcard/Android/data/tld.my.simpletv/files/wallpapers/
 ```
 
-Undo: `adb -s BOX:5555 shell rm /sdcard/Android/data/tld.my.hearth/files/wallpapers/<picture>`.
+Undo: `adb -s BOX:5555 shell rm /sdcard/Android/data/tld.my.simpletv/files/wallpapers/<picture>`.
 
 ## 8. Finish
 

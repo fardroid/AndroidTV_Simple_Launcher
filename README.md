@@ -4,7 +4,7 @@
 
 A quieter home screen for Android TV and Google TV boxes. You get a clock, the weather, your day from Google Calendar and one row of apps, laid over a wallpaper. No ads, no rows of recommendations, nothing that autoplays.
 
-This is the Android TV version of [Simple LG launcher](https://github.com/fardroid/Simple-LG-launcher), which I wrote for my LG TV as a fork of [Hearth](https://github.com/rudra-avatar/Hearth) by rudra-avatar. It looks and works the same, but it is a native Android app in Kotlin and Jetpack Compose, not a web page in a wrapper. It needs no root and asks for no permissions beyond the internet.
+This is the Android TV version of [Simple LG launcher](https://github.com/fardroid/Simple-LG-launcher), which I wrote for my LG TV. It looks and works the same, but it is a native Android app in Kotlin and Jetpack Compose, not a web page in a wrapper. It needs no root and asks for no permissions beyond the internet.
 
 > **The easy way to install it:** give the link to this repository to Claude Code or Codex and ask it to set the launcher up on your box. [AGENTS.md](AGENTS.md) walks the agent through every step: building, installing, making it the home screen and adding your calendars. It checks with you before it changes anything on the box. You only need the box's IP address and network debugging switched on.
 
@@ -20,10 +20,15 @@ This is the Android TV version of [Simple LG launcher](https://github.com/fardro
 - **Clock and date.** A large clock with the weekday and date next to it. Six typefaces, five weights from thin to bold, any size, 12- or 24-hour. The font you pick is used by the weather and calendar cards too.
 - **Weather** from [Open-Meteo](https://open-meteo.com), no account needed: the temperature now, what it feels like, the wind, an hourly curve for the day and seven days ahead. Press ↑ from the app row to step onto it, then ← → move through the days and the curve redraws for each one.
 - **Calendar.** Add the secret iCal address of a Google Calendar (or any `.ics` link). You can add several, and each gets its own colour. Repeating events, exceptions, moved events and all-day events all work. Step onto it with ↑, use ← → to go through the days, and ↑ once more opens the whole month with a dot under each busy day.
-- **Frosted glass.** The cards blur the wallpaper behind them. They turn light or dark together, depending on how bright the picture is behind them, so the text stays readable on any picture.
-- **Your apps in one row.** Hold OK on a tile to move it, hide it, open its app info or uninstall it. At the end of the row are two tiles of the launcher's own: the box's settings and the launcher's settings.
-- **Wallpapers.** Thirteen come built in (soft gradients, dunes, auroras, a sea at dawn), shown as a slideshow with shuffle and an interval from 10 seconds to an hour. You can add your own pictures too.
-- **English or Russian.** It follows the box's language by default. Settings → Home screen → Language changes it.
+- **News.** Headlines from Google News for a country you choose (52 editions, in the launcher's language where the country has one) and from up to eight RSS or Atom feeds of your own, newest first. ← → turn the pages, OK shows a headline with a QR code to read it on your phone (Settings → Widgets → News).
+- **Quote of the day.** From Wikiquote, in the launcher's language: the editors' quote of the day where the language has one, otherwise a quote picked by the date from one of about 400 writers and thinkers.
+- **Cards in columns.** The clock and weather, then the calendar or the news, with the quote under them; with both the calendar and the news on, three columns. ← → go from card to card.
+- **New versions.** Once a day (and on request) the launcher looks on GitHub for a newer release and says so with an *Update* tile and a QR code of its page. It downloads and installs nothing.
+- **Frosted glass.** The cards blur the wallpaper behind them, as much as you like (Settings → Appearance → Frost). They turn light or dark together, depending on how bright the picture is behind them, so the text stays readable on any picture.
+- **Your apps in one row.** Hold OK on a tile to move it, hide it, open its app info or uninstall it. App names under every tile, only under the selected one, or none. At the end of the row are two tiles of the launcher's own: the box's settings and the launcher's settings.
+- **Wallpapers.** Thirteen come built in (soft gradients, dunes, auroras, a sea at dawn), shown as a slideshow with shuffle and an interval from 10 seconds to an hour. Settings → Wallpaper → Picture is a gallery with previews: tick the pictures for the slideshow, among the built-in ones, your own and (once you allow it) the pictures on the box.
+- **Thirteen languages:** English, Russian, Spanish, French, German, Italian, Portuguese, Turkish, Ukrainian, Chinese (Simplified), Japanese, Korean and Polish (the Polish texts thanks to [DriftEngineer](https://github.com/DriftEngineer)). It follows the box's language by default. Settings → Home screen → Language changes it.
+- **Pixel shift for OLED screens** (Settings → Appearance): the clock, the cards and the apps move a few pixels once a minute.
 
 ## What you need
 
@@ -66,7 +71,7 @@ In Google Calendar on a computer, open Settings, choose the calendar, and copy *
 Typing a long link with the remote is no fun, so you can hand the links over from the computer instead (separate several with commas):
 
 ```bash
-adb shell am start -n tld.my.hearth/.MainActivity --esa calendars "https://…/basic.ics,https://…/basic.ics"
+adb shell am start -n tld.my.simpletv/.MainActivity --esa calendars "https://…/basic.ics,https://…/basic.ics"
 ```
 
 The secret address gives read access to that calendar to anyone who has it. It is only kept on the box and only sent to Google. Don't commit it anywhere.
@@ -76,14 +81,14 @@ The secret address gives read access to that calendar to anyone who has it. It i
 The thirteen built-in pictures are in [`app/src/main/assets/wallpapers`](app/src/main/assets/wallpapers): drawn for this launcher and free to use. To add your own, copy them to the launcher's folder on the box. They show up the next time the launcher comes to the front:
 
 ```bash
-adb push my-picture.jpg /sdcard/Android/data/tld.my.hearth/files/wallpapers/
+adb push my-picture.jpg /sdcard/Android/data/tld.my.simpletv/files/wallpapers/
 ```
 
 JPG, PNG or WebP. 1920×1080 or larger looks best; bigger pictures are scaled down when they are loaded.
 
 ## Privacy
 
-For the weather the launcher sends the coordinates of your city to Open-Meteo, plus whatever you type into the city search. The calendar links are fetched by the box directly. Nothing else leaves the box, and there is no tracking of any kind.
+For the weather the launcher sends the coordinates of your city to Open-Meteo, plus whatever you type into the city search. The calendar links are fetched by the box directly. The news is read from Google News (the country's edition) and from the feeds you add; the quote of the day from Wikiquote and Wikidata; the new-version check from GitHub. The pictures on the box are only read once you allow it, and never leave it. Nothing else leaves the box, and there is no tracking of any kind.
 
 ## Working on it
 
@@ -92,13 +97,10 @@ For the weather the launcher sends the coordinates of your city to Open-Meteo, p
 ./gradlew testDebugUnitTest
 ```
 
-Kotlin and Jetpack Compose in one activity; besides AndroidX and Kotlin coroutines it uses no libraries. Everything is laid out on a 1920×1080 design screen, the same as the webOS version. Comments like "a port of `src/lib/plates.ts`" point to the matching file in [Simple LG launcher](https://github.com/fardroid/Simple-LG-launcher), where the same feature first appeared. [CHANGELOG.md](CHANGELOG.md) has the history.
-
-The app ID is `tld.my.hearth`, which is left over from the time the port lived next to the webOS code. It stays as it is, so updates install over the copies already on people's boxes.
+Kotlin and Jetpack Compose in one activity; besides AndroidX and Kotlin coroutines its only library is ZXing's core (the QR code). Everything is laid out on a 1920×1080 design screen, the same as the webOS version. Comments like "a port of `src/lib/plates.ts`" point to the matching file in [Simple LG launcher](https://github.com/fardroid/Simple-LG-launcher), where the same feature first appeared. [CHANGELOG.md](CHANGELOG.md) has the history.
 
 ## Credits
 
-- [Hearth](https://github.com/rudra-avatar/Hearth) by rudra-avatar, which the webOS version started as a fork of. Its look and most of its ideas carried over here.
 - [Simple LG launcher](https://github.com/fardroid/Simple-LG-launcher), the webOS version.
 - [Open-Meteo](https://open-meteo.com) for the free weather.
 
