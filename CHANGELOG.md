@@ -9,7 +9,9 @@ Magic Remote pointer.
 - **The home screen shows a change at once.** Change a look setting (icon size, margins, card colour, frost, the clock's font, size,
   weight and colour, the date, the temperature unit) and Settings steps aside for two seconds: the home screen shows the change,
   with the setting's name and value in a bar at the top. ← → go on changing, ↑ ↓ or Back bring Settings back.
-- **New icon and banner**: a roof over four tiles, as in Simple LG launcher 2.0.
+- **New icon and banner**: a roof over four tiles, as in Simple LG launcher 2.0. The launcher's and the box's settings tiles in the
+  row are coloured as there (a purple one with the launcher's mark, a grey one with a gear), the update tile is green, and the
+  city, calendar and feed pages have the same glyphs before their rows.
 - **A new app ID, `tld.my.simpletv`** (it was `tld.my.hearth`), and the code's package is the same. This is a new app for the box:
   the settings of the old one do not move over. Install it, set it up again, choose it as the home app and switch the Home button
   helper on, then uninstall the old one (`adb uninstall tld.my.hearth`).

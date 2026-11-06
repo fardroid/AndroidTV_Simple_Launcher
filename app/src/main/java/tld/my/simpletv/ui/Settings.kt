@@ -123,17 +123,19 @@ private sealed interface Item {
     val description: String
     /** the heading of its group; rows of one group follow each other */
     val group: String
+    /** a glyph drawn before the label on the pages (the city, the calendars, the feeds) */
+    val icon: Int? get() = null
 }
 
 private data class Toggle(override val label: String, override val description: String, override val group: String, val on: Boolean, val set: (Boolean) -> Unit) : Item
 /** a choice among values: ← → step and stop at the ends, OK steps on and wraps round */
 private data class Step(override val label: String, override val description: String, override val group: String, val texts: List<String>, val index: Int, val pick: (Int) -> Unit) : Item
-private data class Action(override val label: String, override val description: String, override val group: String, val value: String = "", val opens: Boolean = false, val danger: Boolean = false, val run: () -> Unit) : Item
+private data class Action(override val label: String, override val description: String, override val group: String, val value: String = "", val opens: Boolean = false, val danger: Boolean = false, override val icon: Int? = null, val run: () -> Unit) : Item
 /** a fact to read, nothing to change */
-private data class Info(override val label: String, override val description: String, override val group: String, val value: String = "") : Item
-private data class Input(override val label: String, override val description: String, override val group: String, val keyboard: KeyboardType, val submit: (String) -> Unit) : Item
+private data class Info(override val label: String, override val description: String, override val group: String, val value: String = "", override val icon: Int? = null) : Item
+private data class Input(override val label: String, override val description: String, override val group: String, val keyboard: KeyboardType, override val icon: Int? = null, val submit: (String) -> Unit) : Item
 /** one of a list to pick (a city): its detail on the right, a tick on the current one */
-private data class Pick(override val label: String, val detail: String, override val group: String, val checked: Boolean, val pick: () -> Unit) : Item {
+private data class Pick(override val label: String, val detail: String, override val group: String, val checked: Boolean, override val icon: Int? = null, val pick: () -> Unit) : Item {
     override val description get() = ""
 }
 
@@ -256,7 +258,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
 
     val items: List<Item> = when (page) {
         Page.CityPage -> buildList {
-            add(Input(str(R.string.search_for_a_city), str(R.string.type_a_name_and_press_ok), "", KeyboardType.Text) { q ->
+            add(Input(str(R.string.search_for_a_city), str(R.string.type_a_name_and_press_ok), "", KeyboardType.Text, R.drawable.g_search) { q ->
                 cityStatus = str(R.string.searching)
                 scope.launch {
                     val found = withContext(Dispatchers.IO) { runCatching { Net.searchCities(q) }.getOrNull() }
@@ -269,11 +271,11 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                 add(Pick(city.name, city.detail, str(R.string.search_results), c.city == city) { set { it.copy(city = city) }; back() })
             }
             Weather.PRESET_CITIES.forEach { city ->
-                add(Pick(city.name, city.detail, str(R.string.popular_cities), c.city?.name == city.name && c.city?.lat == city.lat) { set { it.copy(city = city) }; back() })
+                add(Pick(city.name, city.detail, str(R.string.popular_cities), c.city?.name == city.name && c.city?.lat == city.lat, R.drawable.g_pin) { set { it.copy(city = city) }; back() })
             }
         }
         Page.Calendars -> buildList {
-            add(Input(str(R.string.add_a_link), str(R.string.the_secret_address_in_ical_format), "", KeyboardType.Uri) { raw ->
+            add(Input(str(R.string.add_a_link), str(R.string.the_secret_address_in_ical_format), "", KeyboardType.Uri, R.drawable.g_search) { raw ->
                 val url = Cal.normalizeUrl(raw)
                 calendarStatus = when {
                     !Cal.validUrl(url) -> str(R.string.that_does_not_look_like_a)
@@ -281,11 +283,11 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                     else -> { set { it.copy(calendars = it.calendars + url) }; str(R.string.calendar_added) }
                 }
             })
-            if (calendarStatus.isNotEmpty()) add(Info(calendarStatus, "", ""))
+            if (calendarStatus.isNotEmpty()) add(Info(calendarStatus, "", "", "", R.drawable.g_info))
             val connected = str(R.string.connected, c.calendars.size)
             c.calendars.forEachIndexed { i, url ->
                 val name = calendarName(state, url, i)
-                add(Action(name, str(R.string.ok_to_remove_it), connected, calendarSite(url), opens = true) { open(Page.CalendarOne(i, name)) })
+                add(Action(name, str(R.string.ok_to_remove_it), connected, calendarSite(url), opens = true, icon = R.drawable.g_picture) { open(Page.CalendarOne(i, name)) })
             }
             add(Action(
                 str(R.string.refresh_now), str(R.string.read_the_calendars_again), "",
@@ -299,11 +301,11 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
             Feeds.COUNTRIES.map { it to Feeds.countryName(it, Lang.current) }.sortedWith(compareBy(java.text.Collator.getInstance(Lang.current.locale)) { it.second }).forEach { (code, name) ->
                 val edition = Feeds.editionFor(code, Lang.current)
                 val language = runCatching { java.util.Locale.forLanguageTag(edition.lang).getDisplayLanguage(Lang.current.locale) }.getOrDefault("").ifEmpty { edition.hl }
-                add(Pick(name, language.replaceFirstChar { it.uppercase(Lang.current.locale) }, group, code == shown) { set { it.copy(newsCountry = code) }; back() })
+                add(Pick(name, language.replaceFirstChar { it.uppercase(Lang.current.locale) }, group, code == shown, R.drawable.g_pin) { set { it.copy(newsCountry = code) }; back() })
             }
         }
         Page.NewsFeeds -> buildList {
-            add(Input(str(R.string.add_a_feed), str(R.string.the_address_of_an_rss_or_atom), "", KeyboardType.Uri) { raw ->
+            add(Input(str(R.string.add_a_feed), str(R.string.the_address_of_an_rss_or_atom), "", KeyboardType.Uri, R.drawable.g_search) { raw ->
                 val url = Feeds.normalizeUrl(raw)
                 feedStatus = when {
                     !Feeds.validUrl(url) -> str(R.string.that_does_not_look_like_a_link_it)
@@ -312,13 +314,13 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                     else -> { set { it.copy(newsFeeds = it.newsFeeds + url) }; str(R.string.added_n, c.newsFeeds.size + 1) }
                 }
             })
-            if (feedStatus.isNotEmpty()) add(Info(feedStatus, "", ""))
-            if (c.newsFeeds.isNotEmpty()) add(Action(str(R.string.remove_all_feeds), str(R.string.only_google_news_stays_if_it_is_on), "") {
+            if (feedStatus.isNotEmpty()) add(Info(feedStatus, "", "", "", R.drawable.g_info))
+            if (c.newsFeeds.isNotEmpty()) add(Action(str(R.string.remove_all_feeds), str(R.string.only_google_news_stays_if_it_is_on), "", icon = R.drawable.g_folder) {
                 set { it.copy(newsFeeds = emptyList(), newsOn = it.newsOn && it.newsGoogle) }
             })
             val group = if (c.newsFeeds.isEmpty()) str(R.string.no_feeds_of_your_own_yet) else str(R.string.added_n, c.newsFeeds.size)
             c.newsFeeds.forEach { url ->
-                add(Action(feedName(url), str(R.string.ok_removes_it), group, feedPath(url)) {
+                add(Action(feedName(url), str(R.string.ok_removes_it), group, feedPath(url), icon = R.drawable.g_picture) {
                     set { it.copy(newsFeeds = it.newsFeeds - url, newsOn = it.newsOn && (it.newsGoogle || it.newsFeeds.size > 1)) }
                 })
             }
@@ -437,7 +439,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
         if (peekBar == null) { peekAnim.animateTo(0f, tween(260, easing = Ease.out)) }
         else { peekAnim.animateTo(1f, tween(260, easing = Ease.out)); kotlinx.coroutines.delay(2200); peekBar = null }
     }
-    SideEffect { state.peek = peekAnim.value }
+    LaunchedEffect(Unit) { androidx.compose.runtime.snapshotFlow { peekAnim.value }.collect { state.peek = it } }
     androidx.compose.runtime.DisposableEffect(Unit) { onDispose { state.peek = 0f } }
 
     val inputFocus = remember { FocusRequester() }
@@ -650,6 +652,7 @@ private fun RowView(item: Item, first: Boolean, last: Boolean, gapAbove: android
             Modifier.fillMaxWidth().heightIn(min = 76.dp).background(bg, RoundedCornerShape(22.dp)).padding(horizontal = 24.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            item.icon?.let { Image(androidx.compose.ui.res.painterResource(it), null, Modifier.padding(end = 28.dp).size(40.dp), colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(if (on) Ui.onPillValue else Hue.textSecondary)) }
             Box(Modifier.weight(1f)) {
                 if (item is Input) InputField(item, on, editing, inputFocus, doneEditing)
                 else BasicText(item.label, style = text(27f, 400, if (item is Action && item.danger) (if (on) Ui.dangerOnPill else Hue.danger) else labelColor), maxLines = 1, overflow = TextOverflow.Ellipsis)

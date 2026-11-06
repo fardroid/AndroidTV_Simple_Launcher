@@ -42,7 +42,7 @@ import tld.my.simpletv.Plates
 import tld.my.simpletv.TileShape
 
 /** A tile of the home row: an app, or one of the launcher's own tiles (its settings, the box's settings). */
-data class TileItem(val key: String, val label: String, val app: AppEntry?, val glyph: Glyph? = null)
+data class TileItem(val key: String, val label: String, val app: AppEntry?, val glyph: Glyph? = null, val art: Int? = null, val color: Color? = null)
 
 const val TILE_GAP = 16
 
@@ -99,13 +99,14 @@ private fun Tile(item: TileItem, focused: Boolean, moving: Boolean, dock: Plates
             Modifier.size(dock.tileW.dp, dock.tileH.dp)
                 .softShadow(24f, 28f, 12f, Color(0x66000000))
                 .clip(radius)
-                .background(if (focused) Hue.tileBgFocus else Hue.tileBg)
+                .background(item.color ?: if (focused) Hue.tileBgFocus else Hue.tileBg)
                 .then(if (moving) Modifier.border(3.dp, Hue.textPrimary, radius) else Modifier),
             contentAlignment = Alignment.Center,
         ) {
             val app = item.app
             when {
-                app == null -> item.glyph?.let { LineGlyph(it, Modifier.fillMaxSize(0.5f)) }
+                app == null -> if (item.art != null) Image(androidx.compose.ui.res.painterResource(item.art), null, Modifier.fillMaxSize(0.5f))
+                    else item.glyph?.let { LineGlyph(it, Modifier.fillMaxSize(0.5f)) }
                 shape == TileShape.BANNER && app.banner != null ->
                     Image(app.banner, null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop, filterQuality = FilterQuality.Medium)
                 app.icon != null -> Image(

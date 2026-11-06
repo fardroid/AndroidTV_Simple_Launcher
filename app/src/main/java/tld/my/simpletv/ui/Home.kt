@@ -96,8 +96,8 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
     val update = if (c.updateCheck) state.update else null
     val ownTiles = remember(Lang.current, update) {
         listOfNotNull(
-            update?.let { TileItem(Apps.UPDATE, str(R.string.update_the_launcher), null, Glyph.DOWNLOAD) },
-            TileItem(Apps.TV_SETTINGS, str(R.string.tv_settings), null, Glyph.TV), TileItem(Apps.LAUNCHER_SETTINGS, str(R.string.launcher_settings), null, Glyph.GEAR),
+            update?.let { TileItem(Apps.UPDATE, str(R.string.update_the_launcher), null, Glyph.DOWNLOAD, R.drawable.sys_update, Color(0xFF248A3D)) },
+            TileItem(Apps.TV_SETTINGS, str(R.string.tv_settings), null, Glyph.TV, R.drawable.sys_gear, Color(0xFF636366)), TileItem(Apps.LAUNCHER_SETTINGS, str(R.string.launcher_settings), null, Glyph.GEAR, R.drawable.sys_launcher, Color(0xFF5245D0)),
         )
     }
     val ordered = moving?.let { keysInOrder -> keysInOrder.mapNotNull { k -> appTiles.firstOrNull { it.key == k } } } ?: appTiles
