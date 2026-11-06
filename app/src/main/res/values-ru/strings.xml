@@ -325,4 +325,14 @@
     <string name="could_not_look_for_a_new_version">Не удалось проверить новую версию</string>
     <string name="switch_on">Вкл.</string>
     <string name="switch_off">Выкл.</string>
+    <string name="colour_theme">Цветовая тема</string>
+    <string name="theme_dusk">Вечернее небо</string>
+    <string name="theme_black">Чёрная (OLED)</string>
+    <string name="theme_grey">Серо-голубая</string>
+    <string name="theme_forest">Лес</string>
+    <string name="theme_ocean">Океан</string>
+    <string name="theme_sunset">Закат</string>
+    <string name="theme_lavender">Лаванда</string>
+    <string name="theme_graphite">Графит</string>
+    <string name="colour_theme_description">Фон без картинки, цвета текста, виджетов, плиток приложений и этих экранов. Чёрная тема не зажигает лишние пиксели OLED.</string>
 </resources>

@@ -195,21 +195,23 @@ object Plates {
     private fun argb(a: Float, r: Int, g: Int, b: Int): Long = ((a * 255).roundToInt().toLong() shl 24) or (r.toLong() shl 16) or (g.toLong() shl 8) or b.toLong()
 
     private val LIGHT = PlateLook(argb(0.11f, 255, 255, 255), argb(0.06f, 255, 255, 255))
-    private val DARK = PlateLook(argb(0.55f, 12, 18, 46), argb(0.18f, 14, 22, 54))
+    private fun rgb(plate: Long, k: Int) = ((plate shr k) and 0xFF).toInt()
+    private fun dark(plate: Long) = PlateLook(argb(0.55f, rgb(plate, 16), rgb(plate, 8), rgb(plate, 0)), argb(0.18f, rgb(plate, 16), rgb(plate, 8), rgb(plate, 0)))
+    const val DEFAULT_PLATE = 0xFF0E1228L
 
     /** Light under dark, dark under light, and in between a dark one that grows stronger the brighter it gets. */
-    fun lookFor(brightness: Float): PlateLook {
+    fun lookFor(brightness: Float, plate: Long = DEFAULT_PLATE): PlateLook {
         if (brightness <= 0.34f) return LIGHT
         val alpha = min(0.66f, 0.3f + (brightness - 0.34f) * 0.9f)
-        return PlateLook(argb(alpha, 14, 18, 40), argb(min(0.3f, 0.05f + alpha * 0.25f), 14, 18, 40))
+        return PlateLook(argb(alpha, rgb(plate, 16), rgb(plate, 8), rgb(plate, 0)), argb(min(0.3f, 0.05f + alpha * 0.25f), rgb(plate, 16), rgb(plate, 8), rgb(plate, 0)))
     }
 
     /** `map` is the wallpaper's brightness grid (null: the plain dark background). In AUTO all the plates get one look,
      *  chosen for the brightest place any of them covers (white text has to read on every one); a light plate next to a
      *  dark one looks like a mistake. */
-    fun looks(mode: PlateMode, map: FloatArray?, board: Board): PlateLook = when (mode) {
+    fun looks(mode: PlateMode, map: FloatArray?, board: Board, plate: Long = DEFAULT_PLATE): PlateLook = when (mode) {
         PlateMode.LIGHT -> LIGHT
-        PlateMode.DARK -> DARK
-        PlateMode.AUTO -> if (map == null) LIGHT else lookFor(board.cards.values.filter { it.h > 0 }.maxOf { regionBrightness(map, it) })
+        PlateMode.DARK -> dark(plate)
+        PlateMode.AUTO -> if (map == null) LIGHT else lookFor(board.cards.values.filter { it.h > 0 }.maxOf { regionBrightness(map, it) }, plate)
     }
 }

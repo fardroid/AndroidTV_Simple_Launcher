@@ -316,4 +316,14 @@
     <string name="could_not_look_for_a_new_version">Não foi possível procurar uma nova versão</string>
     <string name="switch_on">Ativado</string>
     <string name="switch_off">Desativado</string>
+    <string name="colour_theme">Tema de cores</string>
+    <string name="theme_dusk">Céu do entardecer</string>
+    <string name="theme_black">Preto OLED</string>
+    <string name="theme_grey">Cinza-azulado suave</string>
+    <string name="theme_forest">Floresta</string>
+    <string name="theme_ocean">Oceano</string>
+    <string name="theme_sunset">Pôr do sol</string>
+    <string name="theme_lavender">Lavanda</string>
+    <string name="theme_graphite">Grafite</string>
+    <string name="colour_theme_description">O fundo sem imagem, as cores do texto, dos cartões e dos ícones das apps, e destes ecrãs. O preto OLED deixa apagados os píxeis sem uso.</string>
 </resources>

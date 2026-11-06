@@ -325,4 +325,14 @@
     <string name="could_not_look_for_a_new_version">Nie udało się sprawdzić nowej wersji</string>
     <string name="switch_on">Włączone</string>
     <string name="switch_off">Wyłączone</string>
+    <string name="colour_theme">Motyw kolorystyczny</string>
+    <string name="theme_dusk">Wieczorne niebo</string>
+    <string name="theme_black">Czerń OLED</string>
+    <string name="theme_grey">Spokojny niebiesko-szary</string>
+    <string name="theme_forest">Las</string>
+    <string name="theme_ocean">Ocean</string>
+    <string name="theme_sunset">Zachód słońca</string>
+    <string name="theme_lavender">Lawenda</string>
+    <string name="theme_graphite">Grafit</string>
+    <string name="colour_theme_description">Tło bez obrazu, kolory tekstu, kart i kafelków aplikacji oraz tych ekranów. Czerń OLED zostawia nieużywane piksele wyłączone.</string>
 </resources>

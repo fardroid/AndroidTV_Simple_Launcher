@@ -100,7 +100,7 @@ import tld.my.simpletv.Weather
 // ---------- the colours (the same as the webOS Settings, src/theme/global.css) ----------
 
 private object Ui {
-    val screen = Color(0xDB08090E)
+    val screen get() = Color(Themes.current.screen).copy(alpha = 0.86f)
     val nav = Color(0x09FFFFFF)
     val current = Color(0x17FFFFFF)
     val box = Color(0x13FFFFFF)
@@ -336,6 +336,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
             // the apps are a grid of tiles (AppsGrid), not rows
             Section.APPS -> emptyList()
             Section.LOOK -> buildList {
+                add(choice(str(R.string.colour_theme), str(R.string.colour_theme_description), "", Themes.ALL.map { it.id to str(it.name) }, c.theme) { v -> set { it.copy(theme = v) } })
                 val row = str(R.string.app_row)
                 add(choice(str(R.string.tiles), str(R.string.square_icons_or_the_wide_banners), row, TileShape.entries.map { it to it.label }, c.tileShape) { v -> set { it.copy(tileShape = v) } })
                 add(range(str(R.string.icon_size), str(R.string.how_big_the_app_tiles_are), row, c.iconScale, 50, 140, 10, "%") { v -> set { it.copy(iconScale = v) } })
@@ -344,7 +345,8 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                     listOf(0 to str(R.string.all), 1 to str(R.string.selected_only), 2 to str(R.string.labels_none)), labels) { v -> set { it.copy(showLabels = v != 2, labelsSelectedOnly = v == 1) } })
                 add(range(str(R.string.side_margin), str(R.string.space_left_and_right_of_the), row, c.sideMargin, 0, 300, 10, " px") { v -> set { it.copy(sideMargin = v) } })
                 add(range(str(R.string.bottom_margin), str(R.string.space_below_the_row), row, c.bottomMargin, 0, 200, 10, " px") { v -> set { it.copy(bottomMargin = v) } })
-                val cards = str(R.string.cards)
+                val cards = str(R.string.widgets)
+                add(choice(str(R.string.font), str(R.string.for_the_clock_the_date_the), cards, Fonts.ALL.map { it.id to it.label }, c.clockFont) { v -> set { it.copy(clockFont = v) } })
                 add(range(str(R.string.text_size), str(R.string.all_the_text_on_the_weather), cards, c.cardSize, 60, 160, 5, "%") { v -> set { it.copy(cardSize = v) } })
                 add(choice(str(R.string.card_colour), str(R.string.auto_all_the_cards_turn_light), cards, PlateMode.entries.map { it to it.label }, c.plates) { v -> set { it.copy(plates = v) } })
                 if (c.wallpaperOn) add(Toggle(str(R.string.frosted_glass), str(R.string.the_cards_blur_the_picture_behind), cards, c.glass) { v -> set { it.copy(glass = v) } })
@@ -353,7 +355,6 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                 add(Toggle(str(R.string.pixel_shift_oled), str(R.string.the_clock_the_cards_and_the), cards, c.pixelShift) { v -> set { it.copy(pixelShift = v) } })
             }
             Section.WIDGETS -> buildList {
-                add(choice(str(R.string.font), str(R.string.for_the_clock_the_date_the), "", Fonts.ALL.map { it.id to it.label }, c.clockFont) { v -> set { it.copy(clockFont = v) } })
                 val clock = str(R.string.clock)
                 add(choice(str(R.string.format), str(R.string.n12_hour_or_24_hour), clock, listOf(true to str(R.string.n24_hour), false to str(R.string.n12_hour_am_pm)), c.clock24) { v -> set { it.copy(clock24 = v) } })
                 add(range(str(R.string.size), str(R.string.the_height_of_the_digits), clock, c.clockSize, 80, 220, 10, " px") { v -> set { it.copy(clockSize = v) } })
@@ -382,19 +383,18 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
             }
             Section.WALLPAPER -> buildList {
                 add(Toggle(str(R.string.pictures_in_the_background), str(R.string.off_a_calm_dark_gradient_instead), "", c.wallpaperOn) { v -> set { it.copy(wallpaperOn = v) } })
+                if (c.wallpaperOn) add(Action(str(R.string.picture), str(R.string.gallery_description), "", if (c.wallpaperPicks.isEmpty()) str(R.string.all) else plural(R.plurals.pictures_n, c.wallpaperPicks.size), opens = true) { openGallery() })
                 if (c.wallpaperOn) {
                     val show = str(R.string.slideshow)
                     add(choice(str(R.string.change_every), str(R.string.how_long_each_picture_stays_on), show, Config.INTERVALS.map { it to interval(it) }, c.intervalSec) { v -> set { it.copy(intervalSec = v) } })
                     add(Toggle(str(R.string.shuffle), str(R.string.random_order_off_in_turn), show, c.shuffle) { v -> set { it.copy(shuffle = v) } })
                 }
                 val folder = (Wallpapers.folder(context)?.absolutePath ?: "/sdcard/Android/data/tld.my.simpletv/files/wallpapers") + "/"
-                if (c.wallpaperOn) add(Action(str(R.string.picture), str(R.string.gallery_description), "", if (c.wallpaperPicks.isEmpty()) str(R.string.all) else plural(R.plurals.pictures_n, c.wallpaperPicks.size), opens = true) { openGallery() })
                 add(Info(str(R.string.picture_folder), str(R.string.add_your_own_pictures_from_a, folder), str(R.string.your_own_pictures), "adb push"))
             }
             Section.HOME -> buildList {
                 add(choice(if (Lang.current == tld.my.simpletv.Language.EN) "Language" else str(R.string.language) + " · Language", str(R.string.the_language_of_the_launcher_same), "", LangSetting.entries.map { it to Lang.name(it) }, c.language) { v -> set { it.copy(language = v) } })
                 add(Action(str(R.string.reset_look_and_clock), str(R.string.sizes_margins_cards_and_the), "") { set(::resetLook) })
-                add(Action(str(R.string.tv_settings), str(R.string.network_sound_accounts_apps_the), "", opens = true) { Apps.openTvSettings(context) })
                 // read again whenever the launcher comes back (from the box's settings, say)
                 @Suppress("UNUSED_VARIABLE") val again = state.resumes
                 val isHome = HomeRole.isDefault(context)
@@ -409,6 +409,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                     if (!isHome) HomeRole.openHomeSettings(context) else if (!homeKey) HomeRole.openAccessibility(context) else HomeRole.openHomeSettings(context)
                 })
                 val about = str(R.string.about)
+                add(Info("Simple TV launcher", str(R.string.the_android_tv_version_of_simple), about, BuildConfigInfo.version(context)))
                 add(Toggle(str(R.string.check_for_new_versions), str(R.string.check_for_new_versions_description), about, c.updateCheck) { v -> set { it.copy(updateCheck = v) } })
                 if (c.updateCheck) {
                     val found = state.update
@@ -419,7 +420,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                         else -> found?.let { str(R.string.version_n_is_out, it.version) }.orEmpty()
                     }) { state.checkUpdateNow() })
                 }
-                add(Info("Simple TV launcher", str(R.string.the_android_tv_version_of_simple), about, BuildConfigInfo.version(context)))
+                add(Action(str(R.string.tv_settings), str(R.string.network_sound_accounts_apps_the), "", opens = true) { Apps.openTvSettings(context) })
             }
         }
     }
@@ -427,7 +428,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
     if (items.isNotEmpty() && selected !in items.indices) selected = items.lastIndex
 
     // the rows whose change shows on the home screen: Settings steps aside for a moment (as in the webOS app)
-    val peekLabels = remember(Lang.current) { setOf(str(R.string.font), str(R.string.format), str(R.string.size), str(R.string.weight), str(R.string.colour), str(R.string.show_the_date), str(R.string.date_size), str(R.string.temperature_unit)) }
+    val peekLabels = remember(Lang.current) { setOf(str(R.string.format), str(R.string.size), str(R.string.weight), str(R.string.colour), str(R.string.show_the_date), str(R.string.date_size), str(R.string.temperature_unit)) }
     val peekAnim = remember { Animatable(0f) }
     var peekBar by remember { mutableStateOf<Pair<String, String>?>(null) }
     var peekStamp by remember { mutableStateOf(0) }

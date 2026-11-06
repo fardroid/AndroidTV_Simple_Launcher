@@ -312,4 +312,14 @@
     <string name="could_not_look_for_a_new_version">Could not look for a new version</string>
     <string name="switch_on">On</string>
     <string name="switch_off">Off</string>
+    <string name="colour_theme">Colour theme</string>
+    <string name="theme_dusk">Evening sky</string>
+    <string name="theme_black">OLED black</string>
+    <string name="theme_grey">Calm blue-grey</string>
+    <string name="theme_forest">Forest</string>
+    <string name="theme_ocean">Ocean</string>
+    <string name="theme_sunset">Sunset</string>
+    <string name="theme_lavender">Lavender</string>
+    <string name="theme_graphite">Graphite</string>
+    <string name="colour_theme_description">The background when there is no picture, the colours of the text, the cards and the app tiles, and of these screens. OLED black leaves unused pixels off.</string>
 </resources>

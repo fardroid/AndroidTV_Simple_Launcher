@@ -78,8 +78,9 @@ fun Background(wall: WallState, pictures: Boolean) {
             val cur = if (pictures) wall.current else null
             val prev = if (pictures) wall.previous else null
             if (cur == null && prev == null) {
-                drawRect(Brush.linearGradient(listOf(Color(0xFF0B1636), Color(0xFF26357A), Color(0xFF3A2445)), start = Offset.Zero, end = Offset(size.width, size.height)))
-                drawRect(Color(0xB0000000))
+                val th = Themes.current
+                drawRect(Color(th.bg))
+                drawRect(Brush.linearGradient(0f to Color(th.start), 0.55f to Color(th.mid), 1f to Color(th.end), start = Offset(size.width * 0.2f, 0f), end = Offset(size.width * 0.8f, size.height)))
             } else {
                 prev?.let { drawFull(it.image, 1f) }
                 cur?.let { drawFull(it.image, if (prev == null) 1f else wall.fade.value) }

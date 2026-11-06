@@ -325,4 +325,14 @@
     <string name="could_not_look_for_a_new_version">Не вдалося перевірити нову версію</string>
     <string name="switch_on">Увімк.</string>
     <string name="switch_off">Вимк.</string>
+    <string name="colour_theme">Колірна тема</string>
+    <string name="theme_dusk">Вечірнє небо</string>
+    <string name="theme_black">Чорна (OLED)</string>
+    <string name="theme_grey">Сіро-блакитна</string>
+    <string name="theme_forest">Ліс</string>
+    <string name="theme_ocean">Океан</string>
+    <string name="theme_sunset">Захід сонця</string>
+    <string name="theme_lavender">Лаванда</string>
+    <string name="theme_graphite">Графіт</string>
+    <string name="colour_theme_description">Тло без картинки, кольори тексту, карток, плиток застосунків і цих екранів. Чорна тема не вмикає зайві пікселі OLED.</string>
 </resources>

@@ -316,4 +316,14 @@
     <string name="could_not_look_for_a_new_version">Impossible de chercher une nouvelle version</string>
     <string name="switch_on">Activé</string>
     <string name="switch_off">Désactivé</string>
+    <string name="colour_theme">Thème de couleurs</string>
+    <string name="theme_dusk">Ciel du soir</string>
+    <string name="theme_black">Noir OLED</string>
+    <string name="theme_grey">Gris-bleu apaisant</string>
+    <string name="theme_forest">Forêt</string>
+    <string name="theme_ocean">Océan</string>
+    <string name="theme_sunset">Coucher de soleil</string>
+    <string name="theme_lavender">Lavande</string>
+    <string name="theme_graphite">Graphite</string>
+    <string name="colour_theme_description">Le fond sans image, les couleurs du texte, des cartes et des vignettes d\'applis, et de ces écrans. Le noir OLED laisse éteints les pixels inutiles.</string>
 </resources>

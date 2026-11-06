@@ -304,4 +304,14 @@
     <string name="could_not_look_for_a_new_version">无法检查新版本</string>
     <string name="switch_on">开</string>
     <string name="switch_off">关</string>
+    <string name="colour_theme">配色主题</string>
+    <string name="theme_dusk">傍晚天空</string>
+    <string name="theme_black">OLED 纯黑</string>
+    <string name="theme_grey">沉静蓝灰</string>
+    <string name="theme_forest">森林</string>
+    <string name="theme_ocean">海洋</string>
+    <string name="theme_sunset">日落</string>
+    <string name="theme_lavender">薰衣草</string>
+    <string name="theme_graphite">石墨</string>
+    <string name="colour_theme_description">没有图片时的背景，文字、卡片、应用磁贴以及这些屏幕的颜色。OLED 黑色让不用的像素保持熄灭。</string>
 </resources>

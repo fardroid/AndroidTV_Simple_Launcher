@@ -30,7 +30,7 @@ enum class UpdateStatus { LOOKING, LATEST, FOUND, FAILED }
 class LauncherState(private val context: Context, private val scope: CoroutineScope) {
     private val store = Store(context)
 
-    var config by mutableStateOf(store.loadConfig().also { Lang.apply(it.language, context) })
+    var config by mutableStateOf(store.loadConfig().also { Lang.apply(it.language, context); tld.my.simpletv.ui.Themes.id = it.theme })
         private set
     var apps by mutableStateOf<List<AppEntry>>(emptyList())
         private set
@@ -92,6 +92,7 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
         config = next
         store.saveConfig(next)
         if (before.language != next.language) Lang.apply(next.language, context)
+        if (before.theme != next.theme) tld.my.simpletv.ui.Themes.id = next.theme
         if (before.iconScale != next.iconScale || before.tileShape != next.tileShape) reloadApps()
         if (before.city != next.city || before.weatherOn != next.weatherOn) scope.launch { refreshWeather(force = true) }
         if (before.calendars != next.calendars || before.calendarOn != next.calendarOn) scope.launch { refreshCalendar(force = true) }

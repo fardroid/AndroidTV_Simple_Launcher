@@ -9,6 +9,11 @@ Magic Remote pointer.
 - **The home screen shows a change at once.** Change a look setting (icon size, margins, card colour, frost, the clock's font, size,
   weight and colour, the date, the temperature unit) and Settings steps aside for two seconds: the home screen shows the change,
   with the setting's name and value in a bar at the top. ← → go on changing, ↑ ↓ or Back bring Settings back.
+- **Colour themes** (Settings → Appearance, the first row): Evening sky, OLED black, Calm blue-grey, Forest, Ocean, Sunset, Lavender
+  and Graphite, as in Simple LG launcher. A theme sets the colours of the text, the app tiles, the dark cards, Settings' background
+  and the plain background used without a picture. Evening sky is the default, so the look of a fresh install changes a little.
+- **Settings in the same order as in the webOS app**: Font moved to Appearance → Widgets (the group was called Cards), Picture comes
+  before the slideshow rows, and About lists the version first.
 - **New icon and banner**: a roof over four tiles, as in Simple LG launcher 2.0. The launcher's and the box's settings tiles in the
   row are coloured as there (a purple one with the launcher's mark, a grey one with a gear), the update tile is green, and the
   city, calendar and feed pages have the same glyphs before their rows.

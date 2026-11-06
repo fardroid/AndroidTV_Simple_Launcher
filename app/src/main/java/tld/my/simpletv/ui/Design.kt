@@ -29,12 +29,12 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
 object Hue {
-    val textPrimary = Color(0xFFF2F2F2)
-    val textSecondary = Color(0xFFA8A8A8)
-    val textMuted = Color(0xFF6A6A6A)
-    val accent = Color(0xFFFFC36B)
-    val tileBg = Color(0xFF101010)
-    val tileBgFocus = Color(0xFF1D1D1D)
+    val textPrimary get() = Color(Themes.current.text1)
+    val textSecondary get() = Color(Themes.current.text2)
+    val textMuted get() = Color(Themes.current.text3)
+    val accent get() = Color(Themes.current.accent)
+    val tileBg get() = Color(Themes.current.tile)
+    val tileBgFocus get() = Color(Themes.current.tileFocus)
     val overlay = Color(0xE0000000)
     val danger = Color(0xFFEF7A73)
 }

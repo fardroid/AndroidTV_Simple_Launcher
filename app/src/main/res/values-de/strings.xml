@@ -311,4 +311,14 @@
     <string name="could_not_look_for_a_new_version">Die Suche nach einer neuen Version ist fehlgeschlagen</string>
     <string name="switch_on">Ein</string>
     <string name="switch_off">Aus</string>
+    <string name="colour_theme">Farbthema</string>
+    <string name="theme_dusk">Abendhimmel</string>
+    <string name="theme_black">OLED-Schwarz</string>
+    <string name="theme_grey">Ruhiges Blaugrau</string>
+    <string name="theme_forest">Wald</string>
+    <string name="theme_ocean">Ozean</string>
+    <string name="theme_sunset">Sonnenuntergang</string>
+    <string name="theme_lavender">Lavendel</string>
+    <string name="theme_graphite">Graphit</string>
+    <string name="colour_theme_description">Der Hintergrund ohne Bild, die Farben von Text, Karten und App-Kacheln sowie dieser Bildschirme. OLED-Schwarz lässt ungenutzte Pixel aus.</string>
 </resources>

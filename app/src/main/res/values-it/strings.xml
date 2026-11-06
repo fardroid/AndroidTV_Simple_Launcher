@@ -316,4 +316,14 @@
     <string name="could_not_look_for_a_new_version">Impossibile cercare una nuova versione</string>
     <string name="switch_on">Sì</string>
     <string name="switch_off">No</string>
+    <string name="colour_theme">Tema colore</string>
+    <string name="theme_dusk">Cielo serale</string>
+    <string name="theme_black">Nero OLED</string>
+    <string name="theme_grey">Grigio-azzurro tenue</string>
+    <string name="theme_forest">Foresta</string>
+    <string name="theme_ocean">Oceano</string>
+    <string name="theme_sunset">Tramonto</string>
+    <string name="theme_lavender">Lavanda</string>
+    <string name="theme_graphite">Grafite</string>
+    <string name="colour_theme_description">Lo sfondo senza immagine, i colori del testo, delle schede e dei riquadri delle app, e di queste schermate. Il nero OLED lascia spenti i pixel inutilizzati.</string>
 </resources>

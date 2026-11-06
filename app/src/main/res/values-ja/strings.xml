@@ -304,4 +304,14 @@
     <string name="could_not_look_for_a_new_version">新しいバージョンを確認できませんでした</string>
     <string name="switch_on">オン</string>
     <string name="switch_off">オフ</string>
+    <string name="colour_theme">カラーテーマ</string>
+    <string name="theme_dusk">夕暮れの空</string>
+    <string name="theme_black">OLED ブラック</string>
+    <string name="theme_grey">落ち着いたブルーグレー</string>
+    <string name="theme_forest">森</string>
+    <string name="theme_ocean">海</string>
+    <string name="theme_sunset">夕焼け</string>
+    <string name="theme_lavender">ラベンダー</string>
+    <string name="theme_graphite">グラファイト</string>
+    <string name="colour_theme_description">画像がないときの背景、文字・カード・アプリタイル、そしてこれらの画面の色。OLED ブラックは使わない画素を消灯します。</string>
 </resources>

@@ -46,6 +46,8 @@ data class Config(
     val clockFont: String = "inter",
     val clockWeight: Int = 400,
     val clockColor: String = "white",
+    /** the colour theme (ui/Themes.kt) */
+    val theme: String = "dusk",
     val showDate: Boolean = true,
     val dateSize: Int = 100,
     val weatherOn: Boolean = true,
@@ -77,7 +79,7 @@ data class Config(
         put("iconScale", iconScale); put("showLabels", showLabels); put("labelsSelectedOnly", labelsSelectedOnly); put("tileShape", tileShape.name)
         put("sideMargin", sideMargin); put("bottomMargin", bottomMargin); put("cardSize", cardSize)
         put("plates", plates.name); put("glass", glass); put("frost", frost); put("shadows", shadows); put("pixelShift", pixelShift)
-        put("clock24", clock24); put("clockSize", clockSize); put("clockFont", clockFont); put("clockWeight", clockWeight); put("clockColor", clockColor)
+        put("clock24", clock24); put("clockSize", clockSize); put("clockFont", clockFont); put("clockWeight", clockWeight); put("clockColor", clockColor); put("theme", theme)
         put("showDate", showDate); put("dateSize", dateSize)
         put("weatherOn", weatherOn); put("fahrenheit", fahrenheit)
         city?.let { put("city", JSONObject().put("name", it.name).put("lat", it.lat).put("lon", it.lon).put("detail", it.detail)) }
@@ -119,6 +121,7 @@ data class Config(
                     clockFont = o.optString("clockFont", d.clockFont).let { f -> if (f in FONT_IDS) f else d.clockFont },
                     clockWeight = o.optInt("clockWeight", d.clockWeight).let { if (it in listOf(200, 300, 400, 500, 600)) it else d.clockWeight },
                     clockColor = o.optString("clockColor", d.clockColor).let { c -> if (ClockColors.ALL.any { it.id == c }) c else d.clockColor },
+                    theme = o.optString("theme", d.theme).let { t -> if (tld.my.simpletv.ui.Themes.ALL.any { it.id == t }) t else d.theme },
                     showDate = o.optBoolean("showDate", d.showDate),
                     dateSize = o.optInt("dateSize", d.dateSize).coerceIn(60, 160),
                     weatherOn = o.optBoolean("weatherOn", d.weatherOn),

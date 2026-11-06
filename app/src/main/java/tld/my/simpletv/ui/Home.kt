@@ -280,8 +280,8 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
         }
     }
 
-    val look = Plates.looks(c.plates, if (c.wallpaperOn) state.wall.current?.map else null, board)
-    val before = state.wall.previous?.let { Plates.looks(c.plates, it.map, board) }
+    val look = Plates.looks(c.plates, if (c.wallpaperOn) state.wall.current?.map else null, board, Themes.current.plate)
+    val before = state.wall.previous?.let { Plates.looks(c.plates, it.map, board, Themes.current.plate) }
     val glass = c.glass && c.wallpaperOn
 
     // the news turn their pages by themselves every 20 s while the remote is elsewhere

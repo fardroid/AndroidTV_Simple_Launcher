@@ -311,4 +311,14 @@
     <string name="could_not_look_for_a_new_version">Yeni sürüm denetlenemedi</string>
     <string name="switch_on">Açık</string>
     <string name="switch_off">Kapalı</string>
+    <string name="colour_theme">Renk teması</string>
+    <string name="theme_dusk">Akşam göğü</string>
+    <string name="theme_black">OLED siyahı</string>
+    <string name="theme_grey">Sakin mavi-gri</string>
+    <string name="theme_forest">Orman</string>
+    <string name="theme_ocean">Okyanus</string>
+    <string name="theme_sunset">Gün batımı</string>
+    <string name="theme_lavender">Lavanta</string>
+    <string name="theme_graphite">Grafit</string>
+    <string name="colour_theme_description">Resim yokken arka plan; metnin, kartların ve uygulama kutucuklarının ve bu ekranların renkleri. OLED siyahı kullanılmayan pikselleri kapalı tutar.</string>
 </resources>
