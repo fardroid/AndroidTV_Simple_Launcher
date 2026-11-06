@@ -19,10 +19,12 @@ texts are in `app/src/main/assets/licenses` and go into the app.
 ## Libraries
 
 Compiled into the app from Maven, not kept in this repository: AndroidX (Jetpack Compose, Activity, Core, Lifecycle)
-and Kotlin coroutines, all under the Apache License 2.0.
+Kotlin coroutines and [ZXing](https://github.com/zxing/zxing) core (the QR code of a headline), all under the Apache License 2.0.
 
 ## Services
 
-The weather and the city search come from [Open-Meteo](https://open-meteo.com) (CC BY 4.0 data).
+The weather and the city search come from [Open-Meteo](https://open-meteo.com) (CC BY 4.0 data). The news comes from
+Google News and from feeds the user adds; the quote of the day from [Wikiquote](https://www.wikiquote.org) and
+[Wikidata](https://www.wikidata.org) (CC BY-SA 4.0 and CC0).
 
 "Android TV" and "Google TV" are trademarks of Google LLC. This project is not affiliated with Google.

@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "tld.my.hearth"
+    namespace = "tld.my.simpletv"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "tld.my.hearth"
+        applicationId = "tld.my.simpletv"
         minSdk = 28
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 3
+        versionName = "1.2.0"
     }
 
     buildTypes {
@@ -37,6 +37,11 @@ android {
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
+
+    // the language is chosen in the launcher, not by the box: every language has to be in the app (see Lang.kt)
+    bundle {
+        language { enableSplit = false }
+    }
 }
 
 dependencies {
@@ -50,6 +55,8 @@ dependencies {
     implementation("androidx.core:core-ktx:1.18.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
+    // the QR code of a headline (Apache 2.0)
+    implementation("com.google.zxing:core:3.5.3")
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
