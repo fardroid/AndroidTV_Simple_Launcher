@@ -339,4 +339,10 @@
     <string name="update_allow">允许启动器安装应用</string>
     <string name="update_allow_text">在打开的界面中开启，然后再按一次“更新”</string>
     <string name="the_file_came_damaged">文件已损坏</string>
+    <string name="collection">精选图库</string>
+    <string name="collection_mountains">山脉</string>
+    <string name="collection_nature">自然</string>
+    <string name="collection_space">太空</string>
+    <string name="collection_abstract">抽象</string>
+    <string name="wallpaper_downloads">壁纸正在后台下载：%1$s</string>
 </resources>

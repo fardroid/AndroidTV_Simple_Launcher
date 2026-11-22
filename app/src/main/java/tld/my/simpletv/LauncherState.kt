@@ -72,6 +72,12 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
     var homeReset by mutableStateOf(false)
         private set
     val wall = WallState()
+    /** the wallpaper collection: its list and the downloads of the ticked photos (Collection.kt) */
+    val collection = CollectionStore(context, scope).also { store ->
+        // a photo that came joins the slideshow (it starts again with it, when it had nothing of the ticks to show)
+        store.onArrived = { pick -> if (pick in config.wallpaperPicks) restartSlideshow() }
+    }
+
     /** the banners at the top of the screen (ui/Notices.kt) */
     val notices = tld.my.simpletv.ui.NoticeState()
     /** the cards' look as the home screen draws them now: the banners are drawn the same */
@@ -117,8 +123,19 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
     fun photosAsked() { photosVersion++ }
 
     private var work: Job? = null
+    private var slides: Job? = null
+
+    /** The slideshow starts again with what it has now (a photo of the collection came), while the launcher is in front. */
+    private fun restartSlideshow() {
+        val w = work ?: return
+        if (!w.isActive) return
+        slides?.cancel()
+        slides = scope.launch(AndroidUiDispatcher.Main) { slideshow() }
+    }
 
     init {
+        // photos of the collection ticked before and not on the box yet (the launcher was closed meanwhile) come now
+        collection.want(config.wallpaperPicks)
         // the saved result of the last look, shown until the next one
         Updates.fromJson(store.updateCheck)?.second?.takeIf { Updates.newer(it.version, BuildConfigInfo.version(context)) }?.let { update = it }
     }
@@ -173,7 +190,7 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
         work = scope.launch(AndroidUiDispatcher.Main) {
             launch { tickClock() }
             launch { saverLoop() }
-            launch { slideshow() }
+            slides = launch { slideshow() }
             // every 5 minutes; while there is nothing to show yet (the box still joining the network), again after 20 s
             launch { while (isActive) { delay(if (refreshWeather()) 5 * 60_000L else 20_000L) } }
             launch { while (isActive) { delay(if (refreshCalendar()) 5 * 60_000L else 20_000L) } }

@@ -351,4 +351,10 @@
     <string name="update_allow">Consenti al launcher di installare app</string>
     <string name="update_allow_text">Attivalo nella schermata che si è aperta, poi premi di nuovo «Aggiorna»</string>
     <string name="the_file_came_damaged">il file è arrivato danneggiato</string>
+    <string name="collection">Collezione</string>
+    <string name="collection_mountains">Montagne</string>
+    <string name="collection_nature">Natura</string>
+    <string name="collection_space">Spazio</string>
+    <string name="collection_abstract">Astratto</string>
+    <string name="wallpaper_downloads">Gli sfondi si scaricano in background: %1$s</string>
 </resources>

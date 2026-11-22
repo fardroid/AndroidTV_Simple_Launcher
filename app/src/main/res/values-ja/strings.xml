@@ -339,4 +339,10 @@
     <string name="update_allow">ランチャーにアプリのインストールを許可してください</string>
     <string name="update_allow_text">開いた画面で許可をオンにしてから、もう一度「更新」を押してください</string>
     <string name="the_file_came_damaged">ファイルが壊れていました</string>
+    <string name="collection">コレクション</string>
+    <string name="collection_mountains">山</string>
+    <string name="collection_nature">自然</string>
+    <string name="collection_space">宇宙</string>
+    <string name="collection_abstract">抽象</string>
+    <string name="wallpaper_downloads">壁紙をバックグラウンドでダウンロード中: %1$s</string>
 </resources>

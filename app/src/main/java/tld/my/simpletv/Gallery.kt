@@ -49,16 +49,22 @@ object Gallery {
         return by.entries.sortedBy { it.key.lowercase() }.map { GalleryFolder(DEVICE_PREFIX + it.key, it.key, it.value, device = true) }
     }
 
-    /** Every folder with pictures: the built-in ones, the launcher's own folder, then the library's. */
-    fun folders(context: Context): List<GalleryFolder> {
+    /** Every folder with pictures: the built-in ones, the collection's groups (once its list is read), the launcher's own folder,
+     *  then the library's. */
+    fun folders(context: Context, collection: List<CollectionPhoto> = emptyList()): List<GalleryFolder> {
         val all = Wallpapers.list(context)
         val built = all.filter { it.startsWith("asset:") }
         val own = all.filter { !it.startsWith("asset:") }
-        return listOfNotNull(
-            GalleryFolder(BUILTIN, str(R.string.built_in), built).takeIf { built.isNotEmpty() },
-            GalleryFolder(OWN, str(R.string.your_own_pictures), own).takeIf { own.isNotEmpty() },
-        ) + deviceFolders(context)
+        val groups = Collection.GROUPS.mapNotNull { g ->
+            val photos = collection.filter { it.group == g }.map { Collection.PREFIX + it.id }
+            GalleryFolder(Collection.PREFIX + g, Collection.groupName(g), photos).takeIf { photos.isNotEmpty() }
+        }
+        return listOfNotNull(GalleryFolder(BUILTIN, str(R.string.built_in), built).takeIf { built.isNotEmpty() }) + groups +
+            listOfNotNull(GalleryFolder(OWN, str(R.string.your_own_pictures), own).takeIf { own.isNotEmpty() }) + deviceFolders(context)
     }
+
+    /** the collection's photos, for the previews (set by the launcher once the list is read) */
+    @Volatile var collection: List<CollectionPhoto> = emptyList()
 
     /** The pictures the slideshow goes through: the ticked ones that are still there, else the built-in and the user's own. */
     fun slideshow(context: Context, picks: List<String>): List<String> {
@@ -81,7 +87,9 @@ object Gallery {
         gate.acquire()
         try {
             cache.get(id)?.let { return it }
-            val bitmap = Wallpapers.decodeSmall(context, id, w, h)?.asImageBitmap() ?: return null
+            // a photo of the collection: its small copy until the photo itself is on the box
+            val source = if (Collection.isPhoto(id)) collection.firstOrNull { it.id == Collection.idOf(id) }?.let { Collection.preview(context, it) }?.absolutePath ?: return null else id
+            val bitmap = Wallpapers.decodeSmall(context, source, w, h)?.asImageBitmap() ?: return null
             cache.put(id, bitmap)
             return bitmap
         } finally {

@@ -346,4 +346,10 @@
     <string name="update_allow">Başlatıcının uygulama yüklemesine izin verin</string>
     <string name="update_allow_text">Açılan ekranda açın, sonra “Güncelle”ye yeniden basın</string>
     <string name="the_file_came_damaged">dosya bozuk geldi</string>
+    <string name="collection">Koleksiyon</string>
+    <string name="collection_mountains">Dağlar</string>
+    <string name="collection_nature">Doğa</string>
+    <string name="collection_space">Uzay</string>
+    <string name="collection_abstract">Soyut</string>
+    <string name="wallpaper_downloads">Duvar kâğıtları arka planda indiriliyor: %1$s</string>
 </resources>

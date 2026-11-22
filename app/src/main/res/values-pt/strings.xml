@@ -351,4 +351,10 @@
     <string name="update_allow">Permita que o launcher instale apps</string>
     <string name="update_allow_text">Ative na ecrã que se abriu e prima «Atualizar» de novo</string>
     <string name="the_file_came_damaged">o ficheiro chegou danificado</string>
+    <string name="collection">Coleção</string>
+    <string name="collection_mountains">Montanhas</string>
+    <string name="collection_nature">Natureza</string>
+    <string name="collection_space">Espaço</string>
+    <string name="collection_abstract">Abstrato</string>
+    <string name="wallpaper_downloads">Os fundos são transferidos em segundo plano: %1$s</string>
 </resources>

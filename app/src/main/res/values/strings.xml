@@ -347,4 +347,10 @@
     <string name="update_allow">Allow the launcher to install apps</string>
     <string name="update_allow_text">Switch it on in the screen that opened, then press Update again</string>
     <string name="the_file_came_damaged">the file came damaged</string>
+    <string name="collection">Collection</string>
+    <string name="collection_mountains">Mountains</string>
+    <string name="collection_nature">Nature</string>
+    <string name="collection_space">Space</string>
+    <string name="collection_abstract">Abstract</string>
+    <string name="wallpaper_downloads">The wallpaper downloads in the background: %1$s</string>
 </resources>

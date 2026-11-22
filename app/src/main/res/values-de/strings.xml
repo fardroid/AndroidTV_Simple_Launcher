@@ -346,4 +346,10 @@
     <string name="update_allow">Erlauben Sie dem Launcher, Apps zu installieren</string>
     <string name="update_allow_text">Schalten Sie es im geöffneten Bildschirm ein und drücken Sie dann erneut „Aktualisieren“</string>
     <string name="the_file_came_damaged">die Datei kam beschädigt an</string>
+    <string name="collection">Sammlung</string>
+    <string name="collection_mountains">Berge</string>
+    <string name="collection_nature">Natur</string>
+    <string name="collection_space">Weltraum</string>
+    <string name="collection_abstract">Abstrakt</string>
+    <string name="wallpaper_downloads">Die Hintergrundbilder werden im Hintergrund geladen: %1$s</string>
 </resources>

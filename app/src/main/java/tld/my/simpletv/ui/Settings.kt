@@ -238,7 +238,15 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
     val where = page?.title ?: section.name
 
     LaunchedEffect(onGallery, state.photosVersion) {
-        if (onGallery) folders = withContext(Dispatchers.IO) { Gallery.folders(context) }
+        if (onGallery) {
+            folders = withContext(Dispatchers.IO) { Gallery.folders(context, Gallery.collection) }
+            // the collection's list from GitHub, then its groups among the folders
+            val photos = withContext(Dispatchers.IO) { state.collection.list() }
+            if (photos.isNotEmpty() && photos !== Gallery.collection) {
+                Gallery.collection = photos
+                folders = withContext(Dispatchers.IO) { Gallery.folders(context, photos) }
+            }
+        }
     }
     val canReadDevice = remember(onGallery, state.photosVersion) { Gallery.canReadDevice(context) }
     /** the tiles on screen: the folders (and one asking for the box's pictures), or the open folder's pictures */
@@ -255,7 +263,15 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
     }
 
     fun openGallery() { picks.clear(); picks.addAll(c.wallpaperPicks); folderIn = null; galleryAt = 0; open(Page.Pictures) }
-    fun leaveGallery() { set { it.copy(wallpaperPicks = picks.toList()) }; back() }
+    fun leaveGallery() {
+        val chosen = picks.toList()
+        set { it.copy(wallpaperPicks = chosen) }
+        // the ticked photos of the collection come in the background (a banner only while some are still to come)
+        state.collection.want(chosen)
+        val coming = state.collection.missing(chosen)
+        if (coming > 0) state.notices.show(tld.my.simpletv.ui.NoticeKind.DOWNLOAD, str(R.string.wallpaper_downloads, plural(R.plurals.pictures_n, coming)))
+        back()
+    }
 
     val items: List<Item> = when (page) {
         Page.CityPage -> buildList {
@@ -851,8 +867,14 @@ private fun TileFrame(focused: Boolean, content: @Composable androidx.compose.fo
 
 @Composable
 private fun PictureTile(id: String, ticked: Boolean, focused: Boolean) {
+    val context = LocalContext.current
     TileFrame(focused) {
         Thumb(id, Modifier.fillMaxSize())
+        // a photo of the collection not on the box yet: it is downloaded when ticked
+        if (tld.my.simpletv.Collection.isPhoto(id) && !ticked && tld.my.simpletv.Collection.onBox(context, id) == null)
+            Box(Modifier.align(Alignment.TopEnd).padding(8.dp).size(32.dp).background(Color(0x99000000), CircleShape), contentAlignment = Alignment.Center) {
+                LineGlyph(Glyph.DOWNLOAD, Modifier.size(20.dp), Color.White, 2f)
+            }
         if (ticked) Box(Modifier.align(Alignment.TopEnd).padding(8.dp).size(32.dp).background(Color(0xE6F2F2F7), CircleShape), contentAlignment = Alignment.Center) {
             BasicText("✓", style = text(19f, 700, Ui.onPill, 1f))
         }

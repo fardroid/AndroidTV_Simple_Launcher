@@ -360,4 +360,10 @@
     <string name="update_allow">Дозвольте лаунчеру встановлювати застосунки</string>
     <string name="update_allow_text">Увімкніть дозвіл на екрані, що відкрився, і натисніть «Оновити» ще раз</string>
     <string name="the_file_came_damaged">файл прийшов пошкодженим</string>
+    <string name="collection">Колекція</string>
+    <string name="collection_mountains">Гори</string>
+    <string name="collection_nature">Природа</string>
+    <string name="collection_space">Космос</string>
+    <string name="collection_abstract">Абстракції</string>
+    <string name="wallpaper_downloads">Шпалери завантажуються у фоні: %1$s</string>
 </resources>

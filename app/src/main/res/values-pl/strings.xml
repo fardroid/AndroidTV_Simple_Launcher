@@ -360,4 +360,10 @@
     <string name="update_allow">Zezwól launcherowi na instalowanie aplikacji</string>
     <string name="update_allow_text">Włącz to na ekranie, który się otworzył, i ponownie naciśnij „Aktualizuj”</string>
     <string name="the_file_came_damaged">plik dotarł uszkodzony</string>
+    <string name="collection">Kolekcja</string>
+    <string name="collection_mountains">Góry</string>
+    <string name="collection_nature">Przyroda</string>
+    <string name="collection_space">Kosmos</string>
+    <string name="collection_abstract">Abstrakcje</string>
+    <string name="wallpaper_downloads">Tapety pobierają się w tle: %1$s</string>
 </resources>

@@ -351,4 +351,10 @@
     <string name="update_allow">Autorisez le lanceur à installer des applis</string>
     <string name="update_allow_text">Activez-le dans l\'écran qui s\'est ouvert, puis appuyez à nouveau sur « Mettre à jour »</string>
     <string name="the_file_came_damaged">le fichier est arrivé endommagé</string>
+    <string name="collection">Collection</string>
+    <string name="collection_mountains">Montagnes</string>
+    <string name="collection_nature">Nature</string>
+    <string name="collection_space">Espace</string>
+    <string name="collection_abstract">Abstrait</string>
+    <string name="wallpaper_downloads">Les fonds d\'écran se téléchargent en arrière-plan : %1$s</string>
 </resources>

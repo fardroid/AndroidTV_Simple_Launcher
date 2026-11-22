@@ -339,4 +339,10 @@
     <string name="update_allow">런처가 앱을 설치하도록 허용하세요</string>
     <string name="update_allow_text">열린 화면에서 허용을 켠 다음 ‘업데이트’를 다시 누르세요</string>
     <string name="the_file_came_damaged">파일이 손상되었습니다</string>
+    <string name="collection">컬렉션</string>
+    <string name="collection_mountains">산</string>
+    <string name="collection_nature">자연</string>
+    <string name="collection_space">우주</string>
+    <string name="collection_abstract">추상</string>
+    <string name="wallpaper_downloads">배경화면을 백그라운드에서 다운로드 중: %1$s</string>
 </resources>

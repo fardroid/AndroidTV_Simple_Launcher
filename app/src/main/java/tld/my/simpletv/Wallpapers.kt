@@ -49,6 +49,7 @@ object Wallpapers {
     private fun open(context: Context, id: String): java.io.InputStream = when {
         id.startsWith("asset:") -> context.assets.open("$ASSET_DIR/" + id.removePrefix("asset:"))
         id.startsWith("content:") -> context.contentResolver.openInputStream(android.net.Uri.parse(id)) ?: throw java.io.FileNotFoundException(id)
+        Collection.isPhoto(id) -> (Collection.onBox(context, id) ?: throw java.io.FileNotFoundException(id)).inputStream()
         else -> File(id).inputStream()
     }
 

@@ -360,4 +360,10 @@
     <string name="update_allow">Разрешите лаунчеру устанавливать приложения</string>
     <string name="update_allow_text">Включите разрешение на открывшемся экране и нажмите «Обновить» ещё раз</string>
     <string name="the_file_came_damaged">файл пришёл повреждённым</string>
+    <string name="collection">Коллекция</string>
+    <string name="collection_mountains">Горы</string>
+    <string name="collection_nature">Природа</string>
+    <string name="collection_space">Космос</string>
+    <string name="collection_abstract">Абстракции</string>
+    <string name="wallpaper_downloads">Обои скачиваются в фоне: %1$s</string>
 </resources>
