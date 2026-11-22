@@ -342,4 +342,13 @@
     <string name="screen_saver">Économiseur d\'écran</string>
     <string name="after_n">Après %1$s</string>
     <string name="screen_saver_description">Après ce délai sans appui, seul le fond d\'écran reste à l\'écran. N\'importe quelle touche ramène tout.</string>
+    <string name="update_downloading">Téléchargement de la version %1$s…</string>
+    <string name="update_installing">Installation de la mise à jour…</string>
+    <string name="update_download_failed">Impossible de télécharger la mise à jour : %1$s</string>
+    <string name="update_install_failed">Impossible d\'installer la mise à jour : %1$s</string>
+    <string name="update_out">La version %1$s du launcher est sortie</string>
+    <string name="update_out_text">Appuyez sur « Mettre à jour » au bout de la rangée</string>
+    <string name="update_allow">Autorisez le lanceur à installer des applis</string>
+    <string name="update_allow_text">Activez-le dans l\'écran qui s\'est ouvert, puis appuyez à nouveau sur « Mettre à jour »</string>
+    <string name="the_file_came_damaged">le fichier est arrivé endommagé</string>
 </resources>

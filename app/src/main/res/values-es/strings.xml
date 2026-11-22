@@ -342,4 +342,13 @@
     <string name="screen_saver">Salvapantallas</string>
     <string name="after_n">A los %1$s</string>
     <string name="screen_saver_description">Tras este tiempo sin pulsar nada, en la pantalla solo queda el fondo. Cualquier tecla lo devuelve todo.</string>
+    <string name="update_downloading">Descargando la versión %1$s…</string>
+    <string name="update_installing">Instalando la actualización…</string>
+    <string name="update_download_failed">No se pudo descargar la actualización: %1$s</string>
+    <string name="update_install_failed">No se pudo instalar la actualización: %1$s</string>
+    <string name="update_out">Ya está la versión %1$s del launcher</string>
+    <string name="update_out_text">Pulsa «Actualizar» al final de la fila</string>
+    <string name="update_allow">Permite que el launcher instale aplicaciones</string>
+    <string name="update_allow_text">Actívalo en la pantalla que se abrió y vuelve a pulsar «Actualizar»</string>
+    <string name="the_file_came_damaged">el archivo llegó dañado</string>
 </resources>

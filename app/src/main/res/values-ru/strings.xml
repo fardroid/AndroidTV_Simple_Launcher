@@ -351,4 +351,13 @@
     <string name="screen_saver">Заставка</string>
     <string name="after_n">Через %1$s</string>
     <string name="screen_saver_description">Через это время без нажатий на экране остаются одни обои. Любая кнопка возвращает всё.</string>
+    <string name="update_downloading">Скачиваю версию %1$s…</string>
+    <string name="update_installing">Устанавливаю обновление…</string>
+    <string name="update_download_failed">Не удалось скачать обновление: %1$s</string>
+    <string name="update_install_failed">Не удалось установить обновление: %1$s</string>
+    <string name="update_out">Вышла версия лаунчера %1$s</string>
+    <string name="update_out_text">Нажмите «Обновить» в конце ряда</string>
+    <string name="update_allow">Разрешите лаунчеру устанавливать приложения</string>
+    <string name="update_allow_text">Включите разрешение на открывшемся экране и нажмите «Обновить» ещё раз</string>
+    <string name="the_file_came_damaged">файл пришёл повреждённым</string>
 </resources>

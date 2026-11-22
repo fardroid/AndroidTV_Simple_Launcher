@@ -337,4 +337,13 @@
     <string name="screen_saver">Bildschirmschoner</string>
     <string name="after_n">Nach %1$s</string>
     <string name="screen_saver_description">Nach dieser Zeit ohne Tastendruck bleibt auf dem Bildschirm nur das Hintergrundbild. Jede Taste holt alles zurück.</string>
+    <string name="update_downloading">Version %1$s wird heruntergeladen…</string>
+    <string name="update_installing">Update wird installiert…</string>
+    <string name="update_download_failed">Das Update konnte nicht heruntergeladen werden: %1$s</string>
+    <string name="update_install_failed">Das Update konnte nicht installiert werden: %1$s</string>
+    <string name="update_out">Version %1$s des Launchers ist erschienen</string>
+    <string name="update_out_text">Drücken Sie „Aktualisieren“ am Ende der Reihe</string>
+    <string name="update_allow">Erlauben Sie dem Launcher, Apps zu installieren</string>
+    <string name="update_allow_text">Schalten Sie es im geöffneten Bildschirm ein und drücken Sie dann erneut „Aktualisieren“</string>
+    <string name="the_file_came_damaged">die Datei kam beschädigt an</string>
 </resources>

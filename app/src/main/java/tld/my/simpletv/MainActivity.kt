@@ -128,6 +128,9 @@ class MainActivity : ComponentActivity() {
     private fun takeSettings(intent: Intent?) {
         intent?.getStringExtra("notice")?.let { state.notices.show(tld.my.simpletv.ui.NoticeKind.INFO, it, intent.getStringExtra("noticeText").orEmpty()); intent.removeExtra("notice") }
         if (intent?.getBooleanExtra("saver", false) == true) { state.saver.start(System.currentTimeMillis()); intent.removeExtra("saver") }
+        // a debuggable build only: `--es testUpdate <tag>` offers that release as an update, newer or not (to try the installer)
+        val debuggable = (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        intent?.getStringExtra("testUpdate")?.let { tag -> if (debuggable) state.offerRelease(tag); intent.removeExtra("testUpdate") }
         val list = intent?.getStringArrayExtra("calendars") ?: return
         val urls = list.map { Cal.normalizeUrl(it) }.filter { Cal.validUrl(it) }
         if (urls.isNotEmpty()) state.update { it.copy(calendars = urls, calendarOn = true) }

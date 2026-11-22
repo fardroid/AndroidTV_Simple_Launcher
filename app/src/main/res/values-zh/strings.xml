@@ -330,4 +330,13 @@
     <string name="screen_saver">屏幕保护</string>
     <string name="after_n">%1$s后</string>
     <string name="screen_saver_description">在这段时间内不按任何键，屏幕上只留下壁纸。按任意键即可恢复。</string>
+    <string name="update_downloading">正在下载版本 %1$s…</string>
+    <string name="update_installing">正在安装更新…</string>
+    <string name="update_download_failed">无法下载更新：%1$s</string>
+    <string name="update_install_failed">无法安装更新：%1$s</string>
+    <string name="update_out">启动器版本 %1$s 已发布</string>
+    <string name="update_out_text">按一排末尾的“更新”</string>
+    <string name="update_allow">允许启动器安装应用</string>
+    <string name="update_allow_text">在打开的界面中开启，然后再按一次“更新”</string>
+    <string name="the_file_came_damaged">文件已损坏</string>
 </resources>

@@ -311,11 +311,59 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
         val newer = release.getOrNull()?.takeIf { Updates.newer(it.version, BuildConfigInfo.version(context)) }
         store.updateCheck = Updates.toJson(newer, now)
         update = newer
+        // a banner once for each new version
+        if (newer != null && store.bannerVersion != newer.version) {
+            store.bannerVersion = newer.version
+            notices.show(tld.my.simpletv.ui.NoticeKind.UPDATE, str(R.string.update_out, newer.version), str(R.string.update_out_text))
+        }
         if (force) updateStatus = if (newer != null) UpdateStatus.FOUND else UpdateStatus.LATEST
         return true
     }
 
     fun checkUpdateNow() { scope.launch { checkUpdate(force = true) } }
+
+    /** For trying the installer (a debuggable build): this release is offered as an update, newer or not. */
+    fun offerRelease(tag: String) {
+        scope.launch {
+            val u = withContext(Dispatchers.IO) { runCatching { Updates.parse(Net.fetchText(Updates.LATEST.replace("/latest", "/tags/$tag"), 15_000, 400_000)) }.getOrNull() }
+            if (u != null) { update = u; notices.show(tld.my.simpletv.ui.NoticeKind.UPDATE, str(R.string.update_out, u.version), str(R.string.update_out_text)) }
+        }
+    }
+
+    /** 0-1 while the update downloads, null otherwise (the tile shows it) */
+    var updateProgress by mutableStateOf<Float?>(null)
+        private set
+
+    /** The Update tile: downloads the new version, checks it and hands it to Android's installer (Updater.kt). Without the
+     *  permission to install apps, the page where the user allows it opens first. A release without an APK shows its page. */
+    fun updatePressed(showPage: (UpdateInfo) -> Unit) {
+        val u = update ?: return
+        if (updateProgress != null) return
+        if (u.apk.isEmpty()) { showPage(u); return }
+        if (!Updater.canInstall(context)) {
+            notices.show(tld.my.simpletv.ui.NoticeKind.INFO, str(R.string.update_allow), str(R.string.update_allow_text))
+            Updater.openAllow(context)
+            return
+        }
+        notices.show(tld.my.simpletv.ui.NoticeKind.DOWNLOAD, str(R.string.update_downloading, u.version))
+        updateProgress = 0f
+        scope.launch(AndroidUiDispatcher.Main) {
+            val file = withContext(Dispatchers.IO) { runCatching { Updater.download(context, u) { f -> scope.launch(AndroidUiDispatcher.Main) { if (updateProgress != null) updateProgress = f } } } }
+            updateProgress = null
+            file.onFailure { e ->
+                val why = if (e.message == "the file came damaged") str(R.string.the_file_came_damaged) else e.message.orEmpty()
+                notices.show(tld.my.simpletv.ui.NoticeKind.ERROR, str(R.string.update_download_failed, why))
+            }
+            file.onSuccess { apk ->
+                notices.show(tld.my.simpletv.ui.NoticeKind.INFO, str(R.string.update_installing))
+                Updater.onFailed = { why -> scope.launch(AndroidUiDispatcher.Main) { notices.show(tld.my.simpletv.ui.NoticeKind.ERROR, str(R.string.update_install_failed, why)) } }
+                withContext(Dispatchers.IO) { runCatching { Updater.install(context, apk) } }.onFailure { e ->
+                    android.util.Log.w("SimpleTVUpdate", "could not install", e)
+                    notices.show(tld.my.simpletv.ui.NoticeKind.ERROR, str(R.string.update_install_failed, e.message.orEmpty()))
+                }
+            }
+        }
+    }
 
     // ---------- news and the quote of the day ----------
 

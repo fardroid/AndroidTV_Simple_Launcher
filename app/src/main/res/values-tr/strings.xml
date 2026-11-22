@@ -337,4 +337,13 @@
     <string name="screen_saver">Ekran koruyucu</string>
     <string name="after_n">%1$s sonra</string>
     <string name="screen_saver_description">Bu süre boyunca tuşa basılmazsa ekranda yalnızca duvar kağıdı kalır. Herhangi bir tuş her şeyi geri getirir.</string>
+    <string name="update_downloading">%1$s sürümü indiriliyor…</string>
+    <string name="update_installing">Güncelleme yükleniyor…</string>
+    <string name="update_download_failed">Güncelleme indirilemedi: %1$s</string>
+    <string name="update_install_failed">Güncelleme yüklenemedi: %1$s</string>
+    <string name="update_out">Başlatıcının %1$s sürümü çıktı</string>
+    <string name="update_out_text">Sıranın sonundaki “Güncelle”ye basın</string>
+    <string name="update_allow">Başlatıcının uygulama yüklemesine izin verin</string>
+    <string name="update_allow_text">Açılan ekranda açın, sonra “Güncelle”ye yeniden basın</string>
+    <string name="the_file_came_damaged">dosya bozuk geldi</string>
 </resources>

@@ -330,4 +330,13 @@
     <string name="screen_saver">スクリーンセーバー</string>
     <string name="after_n">%1$s後</string>
     <string name="screen_saver_description">この時間キーを押さないと、画面には壁紙だけが残ります。いずれかのキーで元に戻ります。</string>
+    <string name="update_downloading">バージョン %1$s をダウンロード中…</string>
+    <string name="update_installing">アップデートをインストールしています…</string>
+    <string name="update_download_failed">アップデートをダウンロードできませんでした：%1$s</string>
+    <string name="update_install_failed">アップデートをインストールできませんでした：%1$s</string>
+    <string name="update_out">ランチャーのバージョン %1$s が出ました</string>
+    <string name="update_out_text">列の最後の「更新」を押してください</string>
+    <string name="update_allow">ランチャーにアプリのインストールを許可してください</string>
+    <string name="update_allow_text">開いた画面で許可をオンにしてから、もう一度「更新」を押してください</string>
+    <string name="the_file_came_damaged">ファイルが壊れていました</string>
 </resources>

@@ -338,4 +338,13 @@
     <string name="screen_saver">Screen saver</string>
     <string name="after_n">After %1$s</string>
     <string name="screen_saver_description">After this long without a key, only the wallpaper stays on the screen. Any key brings everything back.</string>
+    <string name="update_downloading">Downloading version %1$s…</string>
+    <string name="update_installing">Installing the update…</string>
+    <string name="update_download_failed">Could not download the update: %1$s</string>
+    <string name="update_install_failed">Could not install the update: %1$s</string>
+    <string name="update_out">Version %1$s of the launcher is out</string>
+    <string name="update_out_text">Press Update at the end of the row</string>
+    <string name="update_allow">Allow the launcher to install apps</string>
+    <string name="update_allow_text">Switch it on in the screen that opened, then press Update again</string>
+    <string name="the_file_came_damaged">the file came damaged</string>
 </resources>

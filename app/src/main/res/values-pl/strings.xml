@@ -351,4 +351,13 @@
     <string name="screen_saver">Wygaszacz ekranu</string>
     <string name="after_n">Po %1$s</string>
     <string name="screen_saver_description">Po tym czasie bez naciśnięcia klawisza na ekranie zostaje tylko tapeta. Dowolny klawisz przywraca wszystko.</string>
+    <string name="update_downloading">Pobieranie wersji %1$s…</string>
+    <string name="update_installing">Instalowanie aktualizacji…</string>
+    <string name="update_download_failed">Nie udało się pobrać aktualizacji: %1$s</string>
+    <string name="update_install_failed">Nie udało się zainstalować aktualizacji: %1$s</string>
+    <string name="update_out">Jest wersja %1$s launchera</string>
+    <string name="update_out_text">Naciśnij „Aktualizuj” na końcu rzędu</string>
+    <string name="update_allow">Zezwól launcherowi na instalowanie aplikacji</string>
+    <string name="update_allow_text">Włącz to na ekranie, który się otworzył, i ponownie naciśnij „Aktualizuj”</string>
+    <string name="the_file_came_damaged">plik dotarł uszkodzony</string>
 </resources>

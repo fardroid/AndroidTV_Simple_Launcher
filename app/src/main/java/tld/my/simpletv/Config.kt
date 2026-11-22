@@ -190,6 +190,11 @@ class Store(context: Context) {
         get() = prefs.getString("updateCheck", null)
         set(v) = prefs.edit().putString("updateCheck", v).apply()
 
+    /** the new version the banner was shown for (once for each) */
+    var bannerVersion: String?
+        get() = prefs.getString("bannerVersion", null)
+        set(v) = prefs.edit().putString("bannerVersion", v).apply()
+
     /** the list of Wikiquote authors, kept for a month (Quotes.authorsFromJson) */
     var authors: String?
         get() = prefs.getString("quoteAuthors", null)

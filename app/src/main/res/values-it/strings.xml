@@ -342,4 +342,13 @@
     <string name="screen_saver">Salvaschermo</string>
     <string name="after_n">Dopo %1$s</string>
     <string name="screen_saver_description">Dopo questo tempo senza premere tasti, sullo schermo resta solo lo sfondo. Qualsiasi tasto riporta tutto.</string>
+    <string name="update_downloading">Download della versione %1$s…</string>
+    <string name="update_installing">Installazione dell\'aggiornamento…</string>
+    <string name="update_download_failed">Impossibile scaricare l\'aggiornamento: %1$s</string>
+    <string name="update_install_failed">Impossibile installare l\'aggiornamento: %1$s</string>
+    <string name="update_out">È uscita la versione %1$s del launcher</string>
+    <string name="update_out_text">Premi «Aggiorna» alla fine della fila</string>
+    <string name="update_allow">Consenti al launcher di installare app</string>
+    <string name="update_allow_text">Attivalo nella schermata che si è aperta, poi premi di nuovo «Aggiorna»</string>
+    <string name="the_file_came_damaged">il file è arrivato danneggiato</string>
 </resources>

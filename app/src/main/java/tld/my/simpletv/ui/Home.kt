@@ -96,9 +96,11 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
     // the home row: the apps in the user's order, then the launcher's own tiles
     val appTiles = remember(state.apps, c.appOrder, c.hidden) { Apps.ordered(state.apps, c).map { TileItem(it.pkg, it.label, it) } }
     val update = if (c.updateCheck) state.update else null
-    val ownTiles = remember(Lang.current, update) {
+    // while it downloads the tile's name says how far it has come
+    val percent = state.updateProgress?.let { (it * 20).toInt() * 5 }
+    val ownTiles = remember(Lang.current, update, percent) {
         listOfNotNull(
-            update?.let { TileItem(Apps.UPDATE, str(R.string.update_the_launcher), null, Glyph.DOWNLOAD, R.drawable.sys_update, Color(0xFF248A3D)) },
+            update?.let { TileItem(Apps.UPDATE, if (percent != null) "${str(R.string.update_the_launcher)} · $percent%" else str(R.string.update_the_launcher), null, Glyph.DOWNLOAD, R.drawable.sys_update, Color(0xFF248A3D)) },
             TileItem(Apps.TV_SETTINGS, str(R.string.tv_settings), null, Glyph.TV, R.drawable.sys_gear, Color(0xFF636366)), TileItem(Apps.LAUNCHER_SETTINGS, str(R.string.launcher_settings), null, Glyph.GEAR, R.drawable.sys_launcher, Color(0xFF5245D0)),
         )
     }
@@ -122,7 +124,7 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
             Apps.LAUNCHER_SETTINGS -> state.screen = Screen.SETTINGS
             Apps.TV_SETTINGS -> Apps.openTvSettings(context)
             // the new version: its release over the screen, with the QR code of its page (nothing is downloaded here)
-            Apps.UPDATE -> update?.let { detail = FeedItem(str(R.string.version_of_the_launcher_is_out, it.version), it.url, 0L, "Simple TV launcher", it.notes, -1) }
+            Apps.UPDATE -> state.updatePressed { u -> detail = FeedItem(str(R.string.version_of_the_launcher_is_out, u.version), u.url, 0L, "Simple TV launcher", u.notes, -1) }
             else -> item.app?.let { Apps.launch(context, it) }
         }
     }

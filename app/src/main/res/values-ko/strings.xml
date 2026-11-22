@@ -330,4 +330,13 @@
     <string name="screen_saver">화면 보호기</string>
     <string name="after_n">%1$s 후</string>
     <string name="screen_saver_description">이 시간 동안 키를 누르지 않으면 화면에 배경 화면만 남습니다. 아무 키나 누르면 모두 돌아옵니다.</string>
+    <string name="update_downloading">버전 %1$s 다운로드 중…</string>
+    <string name="update_installing">업데이트 설치 중…</string>
+    <string name="update_download_failed">업데이트를 다운로드하지 못했습니다: %1$s</string>
+    <string name="update_install_failed">업데이트를 설치하지 못했습니다: %1$s</string>
+    <string name="update_out">런처 버전 %1$s이(가) 나왔습니다</string>
+    <string name="update_out_text">줄 끝의 ‘업데이트’를 누르세요</string>
+    <string name="update_allow">런처가 앱을 설치하도록 허용하세요</string>
+    <string name="update_allow_text">열린 화면에서 허용을 켠 다음 ‘업데이트’를 다시 누르세요</string>
+    <string name="the_file_came_damaged">파일이 손상되었습니다</string>
 </resources>

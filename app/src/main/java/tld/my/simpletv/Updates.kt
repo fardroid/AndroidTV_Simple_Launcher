@@ -1,13 +1,14 @@
 package tld.my.simpletv
 
-// Checking for a new version (the counterpart of the webOS version's 2.0.0 check). Once a day the launcher asks GitHub for the
-// latest release of this project. A newer one shows as a note in Settings and an "Update" tile on the home row; pressing it
-// shows the release with a QR code of its page. Nothing is downloaded or installed: Android only installs an app the user
-// allows to be installed, so the new APK is fetched from that page, as the first one was.
+// Checking for a new version and updating to it (as Simple LG launcher does). Once a day the launcher asks GitHub for the latest
+// release of this project. A newer one shows as a line over the row, a banner once and an "Update" tile; pressing the tile
+// downloads the release's APK, checks it against the SHA-256 GitHub gives for it, and hands it to Android's installer, which asks
+// the user to confirm (Updater.kt). Android first has to be told once that the launcher may install apps (Install unknown apps).
 
 import org.json.JSONObject
 
-data class UpdateInfo(val version: String, val url: String, val notes: String)
+/** `apk`, `apkSize` and `sha256`: the release's APK, when it has one with a checksum (GitHub gives "sha256:…" for each file). */
+data class UpdateInfo(val version: String, val url: String, val notes: String, val apk: String = "", val apkSize: Long = 0, val sha256: String = "")
 
 object Updates {
     const val LATEST = "https://api.github.com/repos/fardroid/AndroidTV_Simple_Launcher/releases/latest"
@@ -20,7 +21,18 @@ object Updates {
         val version = o.getString("tag_name").trim().removePrefix("v").removePrefix("V")
         val url = o.getString("html_url")
         if (version.isEmpty() || !url.startsWith("https://github.com/")) return null
-        UpdateInfo(version, url, plain(o.optString("body")))
+        // the first .apk of the release with a checksum
+        var apk = ""; var size = 0L; var sha = ""
+        o.optJSONArray("assets")?.let { a ->
+            for (i in 0 until a.length()) {
+                val f = a.getJSONObject(i)
+                val digest = f.optString("digest")
+                val link = f.optString("browser_download_url")
+                if (!f.optString("name").endsWith(".apk") || !digest.startsWith("sha256:") || !link.startsWith("https://github.com/")) continue
+                apk = link; size = f.optLong("size"); sha = digest.removePrefix("sha256:").lowercase(); break
+            }
+        }
+        UpdateInfo(version, url, plain(o.optString("body")), apk, size, sha)
     }.getOrNull()
 
     /** The release notes as plain text for the screen: the marks of Markdown and the links' addresses left out, cut at 600 characters. */
@@ -46,12 +58,12 @@ object Updates {
     }
 
     fun toJson(u: UpdateInfo?, at: Long): String = JSONObject().put("at", at).apply {
-        if (u != null) put("version", u.version).put("url", u.url).put("notes", u.notes)
+        if (u != null) put("version", u.version).put("url", u.url).put("notes", u.notes).put("apk", u.apk).put("apkSize", u.apkSize).put("sha256", u.sha256)
     }.toString()
 
     /** The saved result: when it was asked, and the release (null: none, or not newer than the running version). */
     fun fromJson(s: String?): Pair<Long, UpdateInfo?>? = if (s == null) null else runCatching {
         val o = JSONObject(s)
-        o.getLong("at") to if (o.has("version")) UpdateInfo(o.getString("version"), o.getString("url"), o.optString("notes")) else null
+        o.getLong("at") to if (o.has("version")) UpdateInfo(o.getString("version"), o.getString("url"), o.optString("notes"), o.optString("apk"), o.optLong("apkSize"), o.optString("sha256")) else null
     }.getOrNull()
 }
