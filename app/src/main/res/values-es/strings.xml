@@ -142,12 +142,12 @@
     <string name="cards">Tarjetas</string>
     <string name="text_size">Tamaño del texto</string>
     <string name="all_the_text_on_the_weather">Todo el texto de las tarjetas del tiempo y del calendario.</string>
-    <string name="card_colour">Color de las tarjetas</string>
+    <string name="card_colour">Fondo de los widgets</string>
     <string name="auto_all_the_cards_turn_light">Auto: todas las tarjetas se vuelven claras u oscuras a la vez, según la imagen que tienen detrás, para que el texto se lea bien en cada una.</string>
     <string name="frosted_glass">Cristal esmerilado</string>
     <string name="the_cards_blur_the_picture_behind">Las tarjetas desenfocan la imagen que tienen detrás.</string>
     <string name="frost">Esmerilado</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">Cuánto difumina el cristal la imagen de detrás: 100 % es lo máximo; con 30 % la imagen se ve más nítida.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">Cuánto difumina el cristal la imagen de detrás: 100 % es el máximo; desactivado lo deja transparente, y el cristal líquido solo la refracta.</string>
     <string name="shadows">Sombras</string>
     <string name="a_soft_shadow_under_the_clock">Una sombra suave bajo el reloj y las tarjetas. Sin ella el dispositivo tiene un poco menos que dibujar.</string>
     <string name="pixel_shift_oled">Desplazamiento de píxeles (OLED)</string>
@@ -326,4 +326,35 @@
     <string name="theme_lavender">Lavanda</string>
     <string name="theme_graphite">Grafito</string>
     <string name="colour_theme_description">El fondo sin imagen, los colores del texto, las tarjetas y los iconos de apps, y de estas pantallas. El negro OLED deja apagados los píxeles sin uso.</string>
+    <string name="glass">Cristal</string>
+    <string name="glass_frosted">Esmerilado</string>
+    <string name="glass_liquid">Líquido</string>
+    <string name="glass_description">Esmerilado: los widgets difuminan la imagen de detrás. Líquido: además la curvan en sus bordes, como un cristal grueso.</string>
+    <string name="clock_weight">Grosor de los dígitos</string>
+    <string name="off">Desactivado</string>
+    <string name="at_night">De noche</string>
+    <string name="always">Siempre</string>
+    <string name="dim_the_picture">Atenuar la imagen</string>
+    <string name="dim_description">Oscurece el fondo de pantalla: descansa la vista y el texto destaca más. De noche: desde la puesta hasta la salida del sol en la ciudad del tiempo (se oscurece poco a poco durante el crepúsculo); sin ciudad elegida, de 19:00 a 7:00.</string>
+    <string name="dimming">Atenuación</string>
+    <string name="how_much_darker">Cuánto se oscurece la imagen.</string>
+    <string name="brightness">Brillo</string>
+    <string name="screen_saver">Salvapantallas</string>
+    <string name="after_n">A los %1$s</string>
+    <string name="screen_saver_description">Tras este tiempo sin pulsar nada, en la pantalla solo queda el fondo. Cualquier tecla lo devuelve todo.</string>
+    <string name="update_downloading">Descargando la versión %1$s…</string>
+    <string name="update_installing">Instalando la actualización…</string>
+    <string name="update_download_failed">No se pudo descargar la actualización: %1$s</string>
+    <string name="update_install_failed">No se pudo instalar la actualización: %1$s</string>
+    <string name="update_out">Ya está la versión %1$s del launcher</string>
+    <string name="update_out_text">Pulsa «Actualizar» al final de la fila</string>
+    <string name="update_allow">Permite que el launcher instale aplicaciones</string>
+    <string name="update_allow_text">Actívalo en la pantalla que se abrió y vuelve a pulsar «Actualizar»</string>
+    <string name="the_file_came_damaged">el archivo llegó dañado</string>
+    <string name="collection">Colección</string>
+    <string name="collection_mountains">Montañas</string>
+    <string name="collection_nature">Naturaleza</string>
+    <string name="collection_space">Espacio</string>
+    <string name="collection_abstract">Abstracto</string>
+    <string name="wallpaper_downloads">Los fondos se descargan en segundo plano: %1$s</string>
 </resources>

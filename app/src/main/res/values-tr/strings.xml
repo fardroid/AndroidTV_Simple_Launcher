@@ -142,12 +142,12 @@
     <string name="cards">Kartlar</string>
     <string name="text_size">Metin boyutu</string>
     <string name="all_the_text_on_the_weather">Hava durumu ve takvim kartlarındaki tüm metin.</string>
-    <string name="card_colour">Kart rengi</string>
+    <string name="card_colour">Widget arka planı</string>
     <string name="auto_all_the_cards_turn_light">Otomatik: tüm kartlar, arkalarındaki resme göre birlikte açık veya koyu olur; böylece metin her birinde okunaklı kalır.</string>
     <string name="frosted_glass">Buzlu cam</string>
     <string name="the_cards_blur_the_picture_behind">Kartlar arkalarındaki resmi bulanıklaştırır.</string>
     <string name="frost">Buzlu cam</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">Camın arkasındaki resmi ne kadar bulanıklaştırdığı: %100 en fazla, %30\'de resim daha net görünür.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">Camın arkasındaki resmi ne kadar bulanıklaştıracağı: en fazla %100; kapalıyken cam saydam kalır ve sıvı cam resmi yalnızca kırar.</string>
     <string name="shadows">Gölgeler</string>
     <string name="a_soft_shadow_under_the_clock">Saatin ve kartların altında yumuşak bir gölge. Gölge olmadan cihazın çizeceği şey biraz azalır.</string>
     <string name="pixel_shift_oled">Piksel kaydırma (OLED)</string>
@@ -321,4 +321,35 @@
     <string name="theme_lavender">Lavanta</string>
     <string name="theme_graphite">Grafit</string>
     <string name="colour_theme_description">Resim yokken arka plan; metnin, kartların ve uygulama kutucuklarının ve bu ekranların renkleri. OLED siyahı kullanılmayan pikselleri kapalı tutar.</string>
+    <string name="glass">Cam</string>
+    <string name="glass_frosted">Buzlu</string>
+    <string name="glass_liquid">Sıvı</string>
+    <string name="glass_description">Buzlu: widget\'lar arkalarındaki resmi bulanıklaştırır. Sıvı: kalın cam gibi kenarlarında resmi ayrıca kırar.</string>
+    <string name="clock_weight">Saat rakamlarının kalınlığı</string>
+    <string name="off">Kapalı</string>
+    <string name="at_night">Geceleri</string>
+    <string name="always">Her zaman</string>
+    <string name="dim_the_picture">Resmi karart</string>
+    <string name="dim_description">Duvar kağıdını karartır: gözü daha az yorar, yazılar daha iyi okunur. Geceleri: hava durumu şehrinde gün batımından gün doğumuna kadar (alacakaranlık boyunca yavaş yavaş kararır); şehir seçilmemişse 19:00-7:00 arası.</string>
+    <string name="dimming">Karartma</string>
+    <string name="how_much_darker">Resmin ne kadar kararacağı.</string>
+    <string name="brightness">Parlaklık</string>
+    <string name="screen_saver">Ekran koruyucu</string>
+    <string name="after_n">%1$s sonra</string>
+    <string name="screen_saver_description">Bu süre boyunca tuşa basılmazsa ekranda yalnızca duvar kağıdı kalır. Herhangi bir tuş her şeyi geri getirir.</string>
+    <string name="update_downloading">%1$s sürümü indiriliyor…</string>
+    <string name="update_installing">Güncelleme yükleniyor…</string>
+    <string name="update_download_failed">Güncelleme indirilemedi: %1$s</string>
+    <string name="update_install_failed">Güncelleme yüklenemedi: %1$s</string>
+    <string name="update_out">Başlatıcının %1$s sürümü çıktı</string>
+    <string name="update_out_text">Sıranın sonundaki “Güncelle”ye basın</string>
+    <string name="update_allow">Başlatıcının uygulama yüklemesine izin verin</string>
+    <string name="update_allow_text">Açılan ekranda açın, sonra “Güncelle”ye yeniden basın</string>
+    <string name="the_file_came_damaged">dosya bozuk geldi</string>
+    <string name="collection">Koleksiyon</string>
+    <string name="collection_mountains">Dağlar</string>
+    <string name="collection_nature">Doğa</string>
+    <string name="collection_space">Uzay</string>
+    <string name="collection_abstract">Soyut</string>
+    <string name="wallpaper_downloads">Duvar kâğıtları arka planda indiriliyor: %1$s</string>
 </resources>

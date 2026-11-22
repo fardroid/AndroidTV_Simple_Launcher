@@ -166,6 +166,23 @@ object Plates {
         return Dock(w, h, label, if (c.showLabels) (label * 2.4f + 14).roundToInt() else 0)
     }
 
+    /** The line over the row (a new version): its height, the gap under it down to the top of the selected (grown) tile, and the
+     *  room it needs between the lowest card and that tile (as Simple LG launcher's home.cpp). */
+    const val LANE_H = 38f
+    const val LANE_BELOW = 23f
+    private const val LANE_ROOM = 84
+
+    /** How far the row goes down (as far as the bottom margin lets it) and the cards up, to make room for the line over the row. */
+    fun laneRoom(c: Config, board: Board): Pair<Int, Int> {
+        val d = dock(c)
+        val bottom = board.cards.values.filter { it.h > 0 }.maxOfOrNull { it.y + it.h } ?: return 0 to 0
+        val focusTop = SCREEN_H - c.bottomMargin - (d.tileH + d.labelBlock) - d.tileH * (FOCUS_SCALE - 1)
+        val need = max(0, LANE_ROOM - floor(focusTop - bottom).toInt())
+        val down = min(need, c.bottomMargin)
+        val up = min(need - down, max(0, boardTop(c) - 16))
+        return down to up
+    }
+
     /** The board keeps its size; it stands so that the space above it and the space down to the selected (grown) tile are the same. */
     fun boardTop(c: Config): Int {
         val d = dock(c)
@@ -194,24 +211,35 @@ object Plates {
 
     private fun argb(a: Float, r: Int, g: Int, b: Int): Long = ((a * 255).roundToInt().toLong() shl 24) or (r.toLong() shl 16) or (g.toLong() shl 8) or b.toLong()
 
-    private val LIGHT = PlateLook(argb(0.11f, 255, 255, 255), argb(0.06f, 255, 255, 255))
-    private fun rgb(plate: Long, k: Int) = ((plate shr k) and 0xFF).toInt()
-    private fun dark(plate: Long) = PlateLook(argb(0.55f, rgb(plate, 16), rgb(plate, 8), rgb(plate, 0)), argb(0.18f, rgb(plate, 16), rgb(plate, 8), rgb(plate, 0)))
+    private fun rgb(color: Long, k: Int) = ((color shr k) and 0xFF).toInt()
     const val DEFAULT_PLATE = 0xFF0E1228L
+    /** the middle of the default theme's background (Evening sky) */
+    const val DEFAULT_MID = 0xFF26357AL
 
-    /** Light under dark, dark under light, and in between a dark one that grows stronger the brighter it gets. */
-    fun lookFor(brightness: Float, plate: Long = DEFAULT_PLATE): PlateLook {
-        if (brightness <= 0.34f) return LIGHT
-        val alpha = min(0.66f, 0.3f + (brightness - 0.34f) * 0.9f)
-        return PlateLook(argb(alpha, rgb(plate, 16), rgb(plate, 8), rgb(plate, 0)), argb(min(0.3f, 0.05f + alpha * 0.25f), rgb(plate, 16), rgb(plate, 8), rgb(plate, 0)))
+    /** The light plate: the theme's own hue (the middle of its background) half way to white, so that the colour theme shows on
+     *  the cards in both looks (as Simple LG launcher 2.2.5). */
+    fun light(mid: Long = DEFAULT_MID): PlateLook {
+        fun half(v: Int) = ((v + 255) / 2f).roundToInt()
+        return PlateLook(argb(0.16f, half(rgb(mid, 16)), half(rgb(mid, 8)), half(rgb(mid, 0))), argb(0.06f, 255, 255, 255))
     }
+
+    /** The dark plate: the theme's plate colour. The card in focus lights up, as on a light plate (a darker tint over it made the
+     *  chosen card the darkest of all). */
+    fun dark(plate: Long = DEFAULT_PLATE) = PlateLook(argb(0.55f, rgb(plate, 16), rgb(plate, 8), rgb(plate, 0)), argb(0.10f, 255, 255, 255))
+
+    /** One of the two looks, the same as Light and Dark: in between ones read as a third colour (Simple LG launcher 2.2.2). */
+    fun lookFor(brightness: Float, plate: Long = DEFAULT_PLATE, mid: Long = DEFAULT_MID): PlateLook =
+        if (brightness <= 0.34f) light(mid) else dark(plate)
 
     /** `map` is the wallpaper's brightness grid (null: the plain dark background). In AUTO all the plates get one look,
      *  chosen for the brightest place any of them covers (white text has to read on every one); a light plate next to a
      *  dark one looks like a mistake. */
-    fun looks(mode: PlateMode, map: FloatArray?, board: Board, plate: Long = DEFAULT_PLATE): PlateLook = when (mode) {
-        PlateMode.LIGHT -> LIGHT
+    fun looks(mode: PlateMode, map: FloatArray?, board: Board, plate: Long = DEFAULT_PLATE, mid: Long = DEFAULT_MID): PlateLook = when (mode) {
+        PlateMode.LIGHT -> light(mid)
         PlateMode.DARK -> dark(plate)
-        PlateMode.AUTO -> if (map == null) LIGHT else lookFor(board.cards.values.filter { it.h > 0 }.maxOf { regionBrightness(map, it) }, plate)
+        PlateMode.AUTO -> if (map == null) light(mid) else lookFor(lookRects(board).maxOfOrNull { regionBrightness(map, it) } ?: 0f, plate, mid)
     }
+
+    /** The places whose brightness chooses the look: the cards (or, with none, nothing). */
+    private fun lookRects(board: Board) = board.cards.values.filter { it.h > 0 }
 }

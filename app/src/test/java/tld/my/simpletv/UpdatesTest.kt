@@ -24,6 +24,20 @@ class UpdatesTest {
         assertNull(Updates.parse(release.replace("https://github.com/", "https://evil.example/")))
     }
 
+    @Test fun findsTheApkAndItsChecksum() {
+        val sha = "0d87e718f4ffcc47298d69207a8d167ba89a99cd58cb6bfe07a5829b8dc41b4e"
+        val withApk = release.replace("\"draft\":false", "\"assets\":[{\"name\":\"notes.txt\",\"digest\":\"sha256:aa\",\"browser_download_url\":\"https://github.com/x/notes.txt\"}," +
+            "{\"name\":\"SimpleTVLauncher-1.3.0.apk\",\"size\":27951498,\"digest\":\"sha256:${sha.uppercase()}\",\"browser_download_url\":\"https://github.com/fardroid/AndroidTV_Simple_Launcher/releases/download/v1.3.0/SimpleTVLauncher-1.3.0.apk\"}],\"draft\":false")
+        val u = Updates.parse(withApk)!!
+        assertEquals("https://github.com/fardroid/AndroidTV_Simple_Launcher/releases/download/v1.3.0/SimpleTVLauncher-1.3.0.apk", u.apk)
+        assertEquals(27951498L, u.apkSize)
+        assertEquals(sha, u.sha256)
+        assertEquals(u, Updates.fromJson(Updates.toJson(u, 5L))!!.second)
+        // an APK without a checksum, or from elsewhere, is not offered for installing
+        assertEquals("", Updates.parse(withApk.replace("sha256:${sha.uppercase()}", ""))!!.apk)
+        assertEquals("", Updates.parse(release)!!.apk)
+    }
+
     @Test fun comparesVersions() {
         assertTrue(Updates.newer("1.2.0", "1.1.0")); assertTrue(Updates.newer("1.10.0", "1.9.5")); assertTrue(Updates.newer("2.0", "1.9.9"))
         assertFalse(Updates.newer("1.1.0", "1.1.0")); assertFalse(Updates.newer("1.0.9", "1.1.0"))

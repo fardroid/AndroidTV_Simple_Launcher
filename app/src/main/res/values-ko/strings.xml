@@ -142,12 +142,12 @@
     <string name="cards">카드</string>
     <string name="text_size">글자 크기</string>
     <string name="all_the_text_on_the_weather">날씨와 캘린더 카드의 모든 글자.</string>
-    <string name="card_colour">카드 색상</string>
+    <string name="card_colour">위젯 배경</string>
     <string name="auto_all_the_cards_turn_light">자동: 모든 카드가 뒤의 이미지에 따라 함께 밝아지거나 어두워져, 어느 카드에서나 글자가 잘 보입니다.</string>
     <string name="frosted_glass">젖빛 유리</string>
     <string name="the_cards_blur_the_picture_behind">카드가 뒤의 이미지를 흐리게 합니다.</string>
     <string name="frost">반투명 정도</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">유리가 뒤의 그림을 얼마나 흐리게 하는지: 100%가 가장 강하고, 30%에서는 그림이 더 선명하게 보입니다.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">유리가 뒤의 사진을 얼마나 흐리게 할지 정합니다. 100%가 가장 강하고, 끄면 투명해져 리퀴드 글래스는 사진을 굴절만 시킵니다.</string>
     <string name="shadows">그림자</string>
     <string name="a_soft_shadow_under_the_clock">시계와 카드 아래의 부드러운 그림자. 끄면 기기가 그릴 것이 조금 줄어듭니다.</string>
     <string name="pixel_shift_oled">픽셀 이동(OLED)</string>
@@ -314,4 +314,35 @@
     <string name="theme_lavender">라벤더</string>
     <string name="theme_graphite">그래파이트</string>
     <string name="colour_theme_description">사진이 없을 때의 배경, 글자·카드·앱 타일 및 이 화면들의 색. OLED 블랙은 쓰지 않는 픽셀을 끕니다.</string>
+    <string name="glass">유리</string>
+    <string name="glass_frosted">반투명</string>
+    <string name="glass_liquid">리퀴드</string>
+    <string name="glass_description">반투명: 위젯이 뒤의 그림을 흐리게 합니다. 리퀴드: 두꺼운 유리처럼 가장자리에서 그림을 굴절시키기도 합니다.</string>
+    <string name="clock_weight">시계 숫자 굵기</string>
+    <string name="off">꺼짐</string>
+    <string name="at_night">밤에</string>
+    <string name="always">항상</string>
+    <string name="dim_the_picture">사진 어둡게</string>
+    <string name="dim_description">배경화면을 어둡게 합니다. 눈이 편하고 글자가 더 잘 보입니다. 밤에: 날씨 도시의 일몰부터 일출까지(해 질 녘에 서서히 어두워집니다). 도시를 선택하지 않았으면 19:00부터 7:00까지.</string>
+    <string name="dimming">어둡기</string>
+    <string name="how_much_darker">사진이 얼마나 어두워지는지.</string>
+    <string name="brightness">밝기</string>
+    <string name="screen_saver">화면 보호기</string>
+    <string name="after_n">%1$s 후</string>
+    <string name="screen_saver_description">이 시간 동안 키를 누르지 않으면 화면에 배경 화면만 남습니다. 아무 키나 누르면 모두 돌아옵니다.</string>
+    <string name="update_downloading">버전 %1$s 다운로드 중…</string>
+    <string name="update_installing">업데이트 설치 중…</string>
+    <string name="update_download_failed">업데이트를 다운로드하지 못했습니다: %1$s</string>
+    <string name="update_install_failed">업데이트를 설치하지 못했습니다: %1$s</string>
+    <string name="update_out">런처 버전 %1$s이(가) 나왔습니다</string>
+    <string name="update_out_text">줄 끝의 ‘업데이트’를 누르세요</string>
+    <string name="update_allow">런처가 앱을 설치하도록 허용하세요</string>
+    <string name="update_allow_text">열린 화면에서 허용을 켠 다음 ‘업데이트’를 다시 누르세요</string>
+    <string name="the_file_came_damaged">파일이 손상되었습니다</string>
+    <string name="collection">컬렉션</string>
+    <string name="collection_mountains">산</string>
+    <string name="collection_nature">자연</string>
+    <string name="collection_space">우주</string>
+    <string name="collection_abstract">추상</string>
+    <string name="wallpaper_downloads">배경화면을 백그라운드에서 다운로드 중: %1$s</string>
 </resources>

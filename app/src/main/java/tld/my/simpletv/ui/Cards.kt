@@ -62,7 +62,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import tld.my.simpletv.Cal
 import tld.my.simpletv.CalendarData
-import tld.my.simpletv.ClockColors
 import tld.my.simpletv.Config
 import tld.my.simpletv.DayEvent
 import tld.my.simpletv.Lang
@@ -79,13 +78,11 @@ import kotlin.math.roundToInt
 @Composable
 fun ClockCard(now: LocalDateTime, c: Config, narrow: Boolean = false) {
     val (time, period) = Texts.timeParts(now, c.clock24)
-    val color = ClockColors.of(c.clockColor)
-    val shadow = Shadow(if (color.dark) Color(0x59FFFFFF) else Color(0x66000000), Offset(0f, 3f), 18f)
-    fun style(size: Float, weight: Int, alpha: Float = 1f, spacing: Float = 0f): TextStyle {
-        val base = wtext(size, weight, lineHeight = 1f, spacing = spacing.sp)
-        return if (color.colors.size > 1) base.copy(brush = Brush.horizontalGradient(color.colors.map { Color(it) }), alpha = alpha, shadow = null)
-        else base.copy(color = Color(color.colors[0]).copy(alpha = alpha), shadow = shadow)
-    }
+    // the clock has the colour of the rest of the text on the cards, the theme's (its own colours, dark ones among them, could
+    // not be read on a card; Simple LG launcher 2.2.5)
+    val shadow = Shadow(Color(0x66000000), Offset(0f, 3f), 18f)
+    fun style(size: Float, weight: Int, alpha: Float = 1f, spacing: Float = 0f): TextStyle =
+        wtext(size, weight, lineHeight = 1f, spacing = spacing.sp).copy(color = Color(Themes.current.text1).copy(alpha = alpha), shadow = shadow)
     val shape = Plates.clockShape(c)
     val size = (if (narrow) Plates.narrowClockSize(shape) else c.clockSize).toFloat()
     val dateSize = (32f * c.dateSize / 100f).roundToInt().toFloat()

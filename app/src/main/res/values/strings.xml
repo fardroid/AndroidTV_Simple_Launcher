@@ -143,12 +143,12 @@
     <string name="cards">Cards</string>
     <string name="text_size">Text size</string>
     <string name="all_the_text_on_the_weather">All the text on the weather and calendar cards.</string>
-    <string name="card_colour">Card colour</string>
+    <string name="card_colour">Card background</string>
     <string name="auto_all_the_cards_turn_light">Auto: all the cards turn light or dark together, depending on the picture behind them, so the text stays readable on each.</string>
     <string name="frosted_glass">Frosted glass</string>
     <string name="the_cards_blur_the_picture_behind">The cards blur the picture behind them.</string>
     <string name="frost">Frost</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">How much the glass blurs the picture behind it: 100% is the most, 30% lets most of the picture through.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">How much the glass blurs the picture behind it: 100% is the most; off leaves it clear, so that liquid glass only bends it.</string>
     <string name="shadows">Shadows</string>
     <string name="a_soft_shadow_under_the_clock">A soft shadow under the clock and the cards. Without it the box has a little less to draw.</string>
     <string name="pixel_shift_oled">Pixel shift (OLED)</string>
@@ -322,4 +322,35 @@
     <string name="theme_lavender">Lavender</string>
     <string name="theme_graphite">Graphite</string>
     <string name="colour_theme_description">The background when there is no picture, the colours of the text, the cards and the app tiles, and of these screens. OLED black leaves unused pixels off.</string>
+    <string name="glass">Glass</string>
+    <string name="glass_frosted">Frosted</string>
+    <string name="glass_liquid">Liquid</string>
+    <string name="glass_description">Frosted: the cards blur the picture behind them. Liquid: they also bend it at their edges, like thick glass.</string>
+    <string name="clock_weight">Clock weight</string>
+    <string name="off">Off</string>
+    <string name="at_night">At night</string>
+    <string name="always">Always</string>
+    <string name="dim_the_picture">Dim the picture</string>
+    <string name="dim_description">Darkens the wallpaper, so it is easier on the eyes and the text stands out. At night: from sunset to sunrise in the weather\'s city (it darkens gradually over the dusk); with no city chosen, from 19:00 to 7:00.</string>
+    <string name="dimming">Dimming</string>
+    <string name="how_much_darker">How much darker the picture gets.</string>
+    <string name="brightness">Brightness</string>
+    <string name="screen_saver">Screen saver</string>
+    <string name="after_n">After %1$s</string>
+    <string name="screen_saver_description">After this long without a key, only the wallpaper stays on the screen. Any key brings everything back.</string>
+    <string name="update_downloading">Downloading version %1$s…</string>
+    <string name="update_installing">Installing the update…</string>
+    <string name="update_download_failed">Could not download the update: %1$s</string>
+    <string name="update_install_failed">Could not install the update: %1$s</string>
+    <string name="update_out">Version %1$s of the launcher is out</string>
+    <string name="update_out_text">Press Update at the end of the row</string>
+    <string name="update_allow">Allow the launcher to install apps</string>
+    <string name="update_allow_text">Switch it on in the screen that opened, then press Update again</string>
+    <string name="the_file_came_damaged">the file came damaged</string>
+    <string name="collection">Collection</string>
+    <string name="collection_mountains">Mountains</string>
+    <string name="collection_nature">Nature</string>
+    <string name="collection_space">Space</string>
+    <string name="collection_abstract">Abstract</string>
+    <string name="wallpaper_downloads">The wallpaper downloads in the background: %1$s</string>
 </resources>

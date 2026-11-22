@@ -27,6 +27,9 @@ enum class Screen { HOME, SETTINGS }
 
 enum class UpdateStatus { LOOKING, LATEST, FOUND, FAILED }
 
+/** the slideshow's step under the screen saver */
+const val SAVER_STEP_MS = 30_000L
+
 class LauncherState(private val context: Context, private val scope: CoroutineScope) {
     private val store = Store(context)
 
@@ -69,6 +72,49 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
     var homeReset by mutableStateOf(false)
         private set
     val wall = WallState()
+    /** the wallpaper collection: its list and the downloads of the ticked photos (Collection.kt) */
+    val collection = CollectionStore(context, scope).also { store ->
+        // a photo that came joins the slideshow (it starts again with it, when it had nothing of the ticks to show)
+        store.onArrived = { pick -> if (pick in config.wallpaperPicks) restartSlideshow() }
+    }
+
+    /** the banners at the top of the screen (ui/Notices.kt) */
+    val notices = tld.my.simpletv.ui.NoticeState()
+    /** the cards' look as the home screen draws them now: the banners are drawn the same */
+    var cardLook by mutableStateOf(Plates.light())
+    var cardLookBefore by mutableStateOf<PlateLook?>(null)
+    var cardGlass by mutableStateOf<tld.my.simpletv.ui.GlassStyle?>(null)
+    /** the screen saver (ui/Saver.kt), and the last key (it counts from there) */
+    val saver = tld.my.simpletv.ui.SaverState()
+    private var lastInputMs = System.currentTimeMillis()
+    /** when the launcher came to the front last: a slideshow waits a little after it */
+    private var resumedAt = 0L
+
+    /** A key, or the Home button: while the screen saver shows it only wakes it (true: used up). */
+    fun input(): Boolean {
+        val now = System.currentTimeMillis()
+        lastInputMs = now
+        if (!saver.showing(now)) return false
+        saver.wake(now)
+        return true
+    }
+
+    /** The saver after the time set without a key, on any screen of the launcher; while it shows, a frame clock for its drift. */
+    private suspend fun saverLoop() {
+        while (true) {
+            val now = System.currentTimeMillis()
+            if (!saver.showing(now)) {
+                val minutes = config.saverMinutes
+                val due = lastInputMs + minutes * 60_000L
+                if (minutes <= 0 || now < due) { delay(if (minutes <= 0) 5_000L else minOf(5_000L, due - now + 1)); continue }
+                saver.start(now)
+            }
+            androidx.compose.runtime.withFrameMillis { saver.frameMs = System.currentTimeMillis() }
+        }
+    }
+
+    /** liquid glass's bevels for the pictures on the screen (Lens.kt) */
+    val lenses = tld.my.simpletv.ui.LensCache(scope)
     /** grows when the user answers the question about the box's pictures (the gallery looks again) */
     var photosVersion by mutableIntStateOf(0)
         private set
@@ -77,8 +123,19 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
     fun photosAsked() { photosVersion++ }
 
     private var work: Job? = null
+    private var slides: Job? = null
+
+    /** The slideshow starts again with what it has now (a photo of the collection came), while the launcher is in front. */
+    private fun restartSlideshow() {
+        val w = work ?: return
+        if (!w.isActive) return
+        slides?.cancel()
+        slides = scope.launch(AndroidUiDispatcher.Main) { slideshow() }
+    }
 
     init {
+        // photos of the collection ticked before and not on the box yet (the launcher was closed meanwhile) come now
+        collection.want(config.wallpaperPicks)
         // the saved result of the last look, shown until the next one
         Updates.fromJson(store.updateCheck)?.second?.takeIf { Updates.newer(it.version, BuildConfigInfo.version(context)) }?.let { update = it }
     }
@@ -128,9 +185,12 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
         reloadApps()
         work?.cancel()
         // on Compose's main dispatcher: it carries the frame clock the wallpaper's cross-fade runs on
+        lastInputMs = System.currentTimeMillis()
+        resumedAt = lastInputMs
         work = scope.launch(AndroidUiDispatcher.Main) {
             launch { tickClock() }
-            launch { slideshow() }
+            launch { saverLoop() }
+            slides = launch { slideshow() }
             // every 5 minutes; while there is nothing to show yet (the box still joining the network), again after 20 s
             launch { while (isActive) { delay(if (refreshWeather()) 5 * 60_000L else 20_000L) } }
             launch { while (isActive) { delay(if (refreshCalendar()) 5 * 60_000L else 20_000L) } }
@@ -141,6 +201,8 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
     }
 
     fun pause() {
+        // the launcher went to the back (an app, the box's own screen saver): the saver ends at once, under it
+        saver.stop()
         work?.cancel()
         work = null
     }
@@ -203,9 +265,13 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
         } else index = list.indexOf(wall.current?.id)
         if (list.size < 2) return
         while (true) {
-            // after coming back from an app the picture stays a little while: nothing changes the moment the screen returns
-            val wait = max(config.intervalSec * 1000L - (System.currentTimeMillis() - lastSlideAt), 12_000L)
-            delay(wait)
+            // after coming back from an app the picture stays a little while: nothing changes the moment the screen returns; under
+            // the screen saver a new picture every 30 s, whatever the slideshow's own time
+            while (true) {
+                val step = if (saver.on) SAVER_STEP_MS else config.intervalSec * 1000L
+                if (System.currentTimeMillis() >= max(lastSlideAt + step, resumedAt + 12_000L)) break
+                delay(500)
+            }
             index = if (config.shuffle) (list.indices - index).random() else (index + 1) % list.size
             val slide = withContext(Dispatchers.Default) { Wallpapers.load(context, list[index], w, h, config.frost) } ?: continue
             store.wallpaperIndex = index
@@ -262,11 +328,61 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
         val newer = release.getOrNull()?.takeIf { Updates.newer(it.version, BuildConfigInfo.version(context)) }
         store.updateCheck = Updates.toJson(newer, now)
         update = newer
+        // a banner once for each new version
+        if (newer != null && store.bannerVersion != newer.version) {
+            store.bannerVersion = newer.version
+            notices.show(tld.my.simpletv.ui.NoticeKind.UPDATE, str(R.string.update_out, newer.version), str(R.string.update_out_text))
+        }
         if (force) updateStatus = if (newer != null) UpdateStatus.FOUND else UpdateStatus.LATEST
         return true
     }
 
     fun checkUpdateNow() { scope.launch { checkUpdate(force = true) } }
+
+    /** For trying the installer (a debuggable build): this release is offered as an update, newer or not. */
+    fun offerRelease(tag: String) {
+        scope.launch {
+            val u = withContext(Dispatchers.IO) { runCatching { Updates.parse(Net.fetchText(Updates.LATEST.replace("/latest", "/tags/$tag"), 15_000, 400_000)) }
+                .onFailure { android.util.Log.w("SimpleTVUpdate", "test release $tag", it) }.getOrNull() }
+            android.util.Log.i("SimpleTVUpdate", "test release $tag: ${u?.version}")
+            if (u != null) { update = u; notices.show(tld.my.simpletv.ui.NoticeKind.UPDATE, str(R.string.update_out, u.version), str(R.string.update_out_text)) }
+        }
+    }
+
+    /** 0-1 while the update downloads, null otherwise (the tile shows it) */
+    var updateProgress by mutableStateOf<Float?>(null)
+        private set
+
+    /** The Update tile: downloads the new version, checks it and hands it to Android's installer (Updater.kt). Without the
+     *  permission to install apps, the page where the user allows it opens first. A release without an APK shows its page. */
+    fun updatePressed(showPage: (UpdateInfo) -> Unit) {
+        val u = update ?: return
+        if (updateProgress != null) return
+        if (u.apk.isEmpty()) { showPage(u); return }
+        if (!Updater.canInstall(context)) {
+            notices.show(tld.my.simpletv.ui.NoticeKind.INFO, str(R.string.update_allow), str(R.string.update_allow_text))
+            Updater.openAllow(context)
+            return
+        }
+        notices.show(tld.my.simpletv.ui.NoticeKind.DOWNLOAD, str(R.string.update_downloading, u.version))
+        updateProgress = 0f
+        scope.launch(AndroidUiDispatcher.Main) {
+            val file = withContext(Dispatchers.IO) { runCatching { Updater.download(context, u) { f -> scope.launch(AndroidUiDispatcher.Main) { if (updateProgress != null) updateProgress = f } } } }
+            updateProgress = null
+            file.onFailure { e ->
+                val why = if (e.message == "the file came damaged") str(R.string.the_file_came_damaged) else e.message.orEmpty()
+                notices.show(tld.my.simpletv.ui.NoticeKind.ERROR, str(R.string.update_download_failed, why))
+            }
+            file.onSuccess { apk ->
+                notices.show(tld.my.simpletv.ui.NoticeKind.INFO, str(R.string.update_installing))
+                Updater.onFailed = { why -> scope.launch(AndroidUiDispatcher.Main) { notices.show(tld.my.simpletv.ui.NoticeKind.ERROR, str(R.string.update_install_failed, why)) } }
+                withContext(Dispatchers.IO) { runCatching { Updater.install(context, apk) } }.onFailure { e ->
+                    android.util.Log.w("SimpleTVUpdate", "could not install", e)
+                    notices.show(tld.my.simpletv.ui.NoticeKind.ERROR, str(R.string.update_install_failed, e.message.orEmpty()))
+                }
+            }
+        }
+    }
 
     // ---------- news and the quote of the day ----------
 

@@ -43,8 +43,12 @@ object Weather {
 
     private fun coord(n: Double) = String.format(Locale.US, "%.3f", n)
 
-    fun forecastUrl(lat: Double, lon: Double) =
-        "https://api.open-meteo.com/v1/forecast?latitude=${coord(lat)}&longitude=${coord(lon)}" +
+    /** Open-Meteo answers the same forecast on these hosts; when the first cannot be reached the next is tried (as Simple LG
+     *  launcher 2.1.0 does: some networks block one of them). */
+    val FORECAST_HOSTS = listOf("api.open-meteo.com", "historical-forecast-api.open-meteo.com", "previous-runs-api.open-meteo.com")
+
+    fun forecastUrl(lat: Double, lon: Double, host: String = FORECAST_HOSTS[0]) =
+        "https://$host/v1/forecast?latitude=${coord(lat)}&longitude=${coord(lon)}" +
             "&current=temperature_2m,apparent_temperature,weather_code,is_day,wind_speed_10m&hourly=temperature_2m,weather_code,is_day" +
             "&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=7&wind_speed_unit=ms&timezone=auto"
 

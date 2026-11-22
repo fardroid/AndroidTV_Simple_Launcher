@@ -7,7 +7,7 @@ import java.net.URL
 
 object Net {
     /** Wikimedia asks scripts to say who they are. */
-    const val AGENT = "SimpleTVLauncher/1.2 (Android TV; https://github.com/fardroid/AndroidTV_Simple_Launcher)"
+    const val AGENT = "SimpleTVLauncher/1.3 (Android TV; https://github.com/fardroid/AndroidTV_Simple_Launcher)"
 
     fun fetchText(url: String, timeoutMs: Int = 15_000, maxBytes: Int = 3 * 1048576): String {
         val c = URL(url).openConnection() as HttpURLConnection
@@ -95,9 +95,22 @@ object Net {
         return Quote(p.first, p.second, code, day, "picked")
     }
 
-    fun weather(city: City): WeatherData =
-        Weather.parse(fetchText(Weather.forecastUrl(city.lat, city.lon)), city.lat, city.lon, System.currentTimeMillis())
-            ?: throw java.io.IOException("unreadable reply")
+    /** The host that answered last is asked first next time. */
+    @Volatile private var weatherHost = 0
+
+    fun weather(city: City): WeatherData {
+        var last: Exception? = null
+        for (k in Weather.FORECAST_HOSTS.indices) {
+            val i = (weatherHost + k) % Weather.FORECAST_HOSTS.size
+            try {
+                val data = Weather.parse(fetchText(Weather.forecastUrl(city.lat, city.lon, Weather.FORECAST_HOSTS[i])), city.lat, city.lon, System.currentTimeMillis())
+                    ?: throw java.io.IOException("unreadable reply")
+                weatherHost = i
+                return data
+            } catch (e: Exception) { last = e }
+        }
+        throw last ?: java.io.IOException("no host answered")
+    }
 
     fun searchCities(query: String): List<City> =
         if (query.trim().length < 2) emptyList() else Weather.parseCities(fetchText(Weather.geocodeUrl(query)))

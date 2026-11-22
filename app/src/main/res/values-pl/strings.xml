@@ -142,12 +142,12 @@
     <string name="cards">Karty</string>
     <string name="text_size">Rozmiar tekstu</string>
     <string name="all_the_text_on_the_weather">Cały tekst na kartach pogody i kalendarza.</string>
-    <string name="card_colour">Kolor kart</string>
+    <string name="card_colour">Tło widżetów</string>
     <string name="auto_all_the_cards_turn_light">Auto: wszystkie karty stają się jasne lub ciemne w zależności od obrazu w tle, aby tekst pozostał czytelny na każdej z nich.</string>
     <string name="frosted_glass">Szronione szkło</string>
     <string name="the_cards_blur_the_picture_behind">Karty rozmywają obraz znajdujący się za nimi.</string>
     <string name="frost">Matowość</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">Jak mocno szkło rozmywa obraz pod sobą: 100% najmocniej, przy 30% obraz jest najwyraźniejszy.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">Jak mocno szkło rozmywa obraz pod sobą: 100% najmocniej; wyłączone zostawia je przejrzyste, a płynne szkło tylko go załamuje.</string>
     <string name="shadows">Cienie</string>
     <string name="a_soft_shadow_under_the_clock">Delikatny cień pod zegarem i kartami. Bez niego urządzenie ma trochę mniej do rysowania.</string>
     <string name="pixel_shift_oled">Przesuwanie pikseli (OLED)</string>
@@ -335,4 +335,35 @@
     <string name="theme_lavender">Lawenda</string>
     <string name="theme_graphite">Grafit</string>
     <string name="colour_theme_description">Tło bez obrazu, kolory tekstu, kart i kafelków aplikacji oraz tych ekranów. Czerń OLED zostawia nieużywane piksele wyłączone.</string>
+    <string name="glass">Szkło</string>
+    <string name="glass_frosted">Matowe</string>
+    <string name="glass_liquid">Płynne</string>
+    <string name="glass_description">Matowe: widżety rozmywają obraz za sobą. Płynne: dodatkowo załamują go na krawędziach, jak grube szkło.</string>
+    <string name="clock_weight">Grubość cyfr zegara</string>
+    <string name="off">Wyłączone</string>
+    <string name="at_night">W nocy</string>
+    <string name="always">Zawsze</string>
+    <string name="dim_the_picture">Przyciemniaj obraz</string>
+    <string name="dim_description">Przyciemnia tapetę: oczy mniej się męczą, a tekst jest lepiej widoczny. W nocy: od zachodu do wschodu słońca w mieście pogody (ciemnieje stopniowo o zmierzchu); bez wybranego miasta od 19:00 do 7:00.</string>
+    <string name="dimming">Przyciemnienie</string>
+    <string name="how_much_darker">O ile ciemniejszy staje się obraz.</string>
+    <string name="brightness">Jasność</string>
+    <string name="screen_saver">Wygaszacz ekranu</string>
+    <string name="after_n">Po %1$s</string>
+    <string name="screen_saver_description">Po tym czasie bez naciśnięcia klawisza na ekranie zostaje tylko tapeta. Dowolny klawisz przywraca wszystko.</string>
+    <string name="update_downloading">Pobieranie wersji %1$s…</string>
+    <string name="update_installing">Instalowanie aktualizacji…</string>
+    <string name="update_download_failed">Nie udało się pobrać aktualizacji: %1$s</string>
+    <string name="update_install_failed">Nie udało się zainstalować aktualizacji: %1$s</string>
+    <string name="update_out">Jest wersja %1$s launchera</string>
+    <string name="update_out_text">Naciśnij „Aktualizuj” na końcu rzędu</string>
+    <string name="update_allow">Zezwól launcherowi na instalowanie aplikacji</string>
+    <string name="update_allow_text">Włącz to na ekranie, który się otworzył, i ponownie naciśnij „Aktualizuj”</string>
+    <string name="the_file_came_damaged">plik dotarł uszkodzony</string>
+    <string name="collection">Kolekcja</string>
+    <string name="collection_mountains">Góry</string>
+    <string name="collection_nature">Przyroda</string>
+    <string name="collection_space">Kosmos</string>
+    <string name="collection_abstract">Abstrakcje</string>
+    <string name="wallpaper_downloads">Tapety pobierają się w tle: %1$s</string>
 </resources>

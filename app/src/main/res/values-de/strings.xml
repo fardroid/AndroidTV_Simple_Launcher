@@ -142,12 +142,12 @@
     <string name="cards">Karten</string>
     <string name="text_size">Textgröße</string>
     <string name="all_the_text_on_the_weather">Der gesamte Text auf den Wetter- und Kalenderkarten.</string>
-    <string name="card_colour">Kartenfarbe</string>
+    <string name="card_colour">Widget-Hintergrund</string>
     <string name="auto_all_the_cards_turn_light">Auto: Alle Karten werden gemeinsam hell oder dunkel, je nach Bild dahinter, damit der Text auf jeder lesbar bleibt.</string>
     <string name="frosted_glass">Milchglas</string>
     <string name="the_cards_blur_the_picture_behind">Die Karten verwischen das Bild hinter ihnen.</string>
     <string name="frost">Mattheit</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">Wie stark das Glas das Bild dahinter verwischt: 100 % am stärksten, bei 30 % ist das Bild deutlicher zu sehen.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">Wie stark das Glas das Bild dahinter weichzeichnet: 100 % am stärksten; aus lässt es klar, sodass Flüssigglas es nur bricht.</string>
     <string name="shadows">Schatten</string>
     <string name="a_soft_shadow_under_the_clock">Ein weicher Schatten unter der Uhr und den Karten. Ohne ihn hat die Box etwas weniger zu zeichnen.</string>
     <string name="pixel_shift_oled">Pixelverschiebung (OLED)</string>
@@ -321,4 +321,35 @@
     <string name="theme_lavender">Lavendel</string>
     <string name="theme_graphite">Graphit</string>
     <string name="colour_theme_description">Der Hintergrund ohne Bild, die Farben von Text, Karten und App-Kacheln sowie dieser Bildschirme. OLED-Schwarz lässt ungenutzte Pixel aus.</string>
+    <string name="glass">Glas</string>
+    <string name="glass_frosted">Matt</string>
+    <string name="glass_liquid">Flüssig</string>
+    <string name="glass_description">Matt: Die Widgets zeichnen das Bild dahinter weich. Flüssig: Sie brechen es zusätzlich an ihren Rändern, wie dickes Glas.</string>
+    <string name="clock_weight">Stärke der Uhrziffern</string>
+    <string name="off">Aus</string>
+    <string name="at_night">Nachts</string>
+    <string name="always">Immer</string>
+    <string name="dim_the_picture">Bild abdunkeln</string>
+    <string name="dim_description">Dunkelt das Hintergrundbild ab: angenehmer für die Augen, und der Text hebt sich besser ab. Nachts: von Sonnenuntergang bis Sonnenaufgang in der Stadt des Wetters (es wird während der Dämmerung allmählich dunkler); ohne gewählte Stadt von 19:00 bis 7:00 Uhr.</string>
+    <string name="dimming">Abdunklung</string>
+    <string name="how_much_darker">Wie viel dunkler das Bild wird.</string>
+    <string name="brightness">Helligkeit</string>
+    <string name="screen_saver">Bildschirmschoner</string>
+    <string name="after_n">Nach %1$s</string>
+    <string name="screen_saver_description">Nach dieser Zeit ohne Tastendruck bleibt auf dem Bildschirm nur das Hintergrundbild. Jede Taste holt alles zurück.</string>
+    <string name="update_downloading">Version %1$s wird heruntergeladen…</string>
+    <string name="update_installing">Update wird installiert…</string>
+    <string name="update_download_failed">Das Update konnte nicht heruntergeladen werden: %1$s</string>
+    <string name="update_install_failed">Das Update konnte nicht installiert werden: %1$s</string>
+    <string name="update_out">Version %1$s des Launchers ist erschienen</string>
+    <string name="update_out_text">Drücken Sie „Aktualisieren“ am Ende der Reihe</string>
+    <string name="update_allow">Erlauben Sie dem Launcher, Apps zu installieren</string>
+    <string name="update_allow_text">Schalten Sie es im geöffneten Bildschirm ein und drücken Sie dann erneut „Aktualisieren“</string>
+    <string name="the_file_came_damaged">die Datei kam beschädigt an</string>
+    <string name="collection">Sammlung</string>
+    <string name="collection_mountains">Berge</string>
+    <string name="collection_nature">Natur</string>
+    <string name="collection_space">Weltraum</string>
+    <string name="collection_abstract">Abstrakt</string>
+    <string name="wallpaper_downloads">Die Hintergrundbilder werden im Hintergrund geladen: %1$s</string>
 </resources>

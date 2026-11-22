@@ -7,6 +7,11 @@ package tld.my.simpletv.ui
 import tld.my.simpletv.R
 import tld.my.simpletv.str
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.Row
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +25,8 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import tld.my.simpletv.GlassKind
+import tld.my.simpletv.Sun
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -86,7 +93,14 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
 
     // where the cards stand, and the row's geometry (for the way up from the selected tile)
     val dock = Plates.dock(c)
-    val board = Plates.boardLayout(Plates.Cards(weatherView != null, calendarOn, newsOn, c.quoteOn, Plates.clockShape(c)), Plates.boardTop(c))
+    val cardsOn = Plates.Cards(weatherView != null, calendarOn, newsOn, c.quoteOn, Plates.clockShape(c))
+    // a new version: a line of its own over the row (as Simple LG launcher 2.2.5), and the row goes down to make room for it, as
+    // far as the bottom margin lets it, then the cards go up
+    val laneOn = c.updateCheck && state.update != null
+    val (laneDown, laneUp) = if (laneOn) Plates.laneRoom(c, Plates.boardLayout(cardsOn, Plates.boardTop(c))) else 0 to 0
+    val board = Plates.boardLayout(cardsOn, Plates.boardTop(c) - laneUp)
+    val laneDrop by androidx.compose.animation.core.animateFloatAsState(laneDown.toFloat(), tween(450, easing = Ease.inOut), label = "laneDrop")
+    val laneShow by androidx.compose.animation.core.animateFloatAsState(if (laneOn) 1f else 0f, tween(if (laneOn) 450 else 250, easing = Ease.inOut), label = "laneShow")
     val newsRect = board.rect(Plates.CardId.NEWS)
     val newsK = c.cardSize / 100f
     val (newsPer, newsPageCount) = newsPages(news?.items?.size ?: 0, (newsRect?.h ?: 686).toFloat(), newsK)
@@ -94,9 +108,11 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
     // the home row: the apps in the user's order, then the launcher's own tiles
     val appTiles = remember(state.apps, c.appOrder, c.hidden) { Apps.ordered(state.apps, c).map { TileItem(it.pkg, it.label, it) } }
     val update = if (c.updateCheck) state.update else null
-    val ownTiles = remember(Lang.current, update) {
+    // while it downloads the tile's name says how far it has come
+    val percent = state.updateProgress?.let { (it * 20).toInt() * 5 }
+    val ownTiles = remember(Lang.current, update, percent) {
         listOfNotNull(
-            update?.let { TileItem(Apps.UPDATE, str(R.string.update_the_launcher), null, Glyph.DOWNLOAD, R.drawable.sys_update, Color(0xFF248A3D)) },
+            update?.let { TileItem(Apps.UPDATE, if (percent != null) "${str(R.string.update_the_launcher)} · $percent%" else str(R.string.update_the_launcher), null, Glyph.DOWNLOAD, R.drawable.sys_update, Color(0xFF248A3D)) },
             TileItem(Apps.TV_SETTINGS, str(R.string.tv_settings), null, Glyph.TV, R.drawable.sys_gear, Color(0xFF636366)), TileItem(Apps.LAUNCHER_SETTINGS, str(R.string.launcher_settings), null, Glyph.GEAR, R.drawable.sys_launcher, Color(0xFF5245D0)),
         )
     }
@@ -120,7 +136,7 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
             Apps.LAUNCHER_SETTINGS -> state.screen = Screen.SETTINGS
             Apps.TV_SETTINGS -> Apps.openTvSettings(context)
             // the new version: its release over the screen, with the QR code of its page (nothing is downloaded here)
-            Apps.UPDATE -> update?.let { detail = FeedItem(str(R.string.version_of_the_launcher_is_out, it.version), it.url, 0L, "Simple TV launcher", it.notes, -1) }
+            Apps.UPDATE -> state.updatePressed { u -> detail = FeedItem(str(R.string.version_of_the_launcher_is_out, u.version), u.url, 0L, "Simple TV launcher", u.notes, -1) }
             else -> item.app?.let { Apps.launch(context, it) }
         }
     }
@@ -280,9 +296,16 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
         }
     }
 
-    val look = Plates.looks(c.plates, if (c.wallpaperOn) state.wall.current?.map else null, board, Themes.current.plate)
-    val before = state.wall.previous?.let { Plates.looks(c.plates, it.map, board, Themes.current.plate) }
-    val glass = c.glass && c.wallpaperOn
+    // Dim the picture: the wallpaper and the glass that much darker, and the plates chosen for the picture as dimmed
+    val dim = Sun.dim(c, nowMs)
+    fun seen(map: FloatArray) = if (dim <= 0f) map else FloatArray(map.size) { map[it] * (1 - dim) }
+    val look = Plates.looks(c.plates, if (c.wallpaperOn) state.wall.current?.map?.let(::seen) else null, board, Themes.current.plate, Themes.current.mid)
+    val before = state.wall.previous?.let { Plates.looks(c.plates, seen(it.map), board, Themes.current.plate, Themes.current.mid) }
+    val glass = if (c.glass && c.wallpaperOn) GlassStyle(c.glassKind, dim, state.lenses) else null
+    SideEffect {
+        if (glass?.kind == GlassKind.LIQUID) state.lenses.keep(listOf(state.wall.current, state.wall.previous))
+        state.cardLook = look; state.cardLookBefore = before; state.cardGlass = glass
+    }
 
     // the news turn their pages by themselves every 20 s while the remote is elsewhere
     LaunchedEffect(newsOn, zone == Zone.NEWS, detail == null, newsPageCount, newsPage) {
@@ -300,7 +323,15 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
     }
 
     Box(Modifier.fillMaxSize()) {
-        Background(state.wall, c.wallpaperOn)
+        // under the screen saver the wallpaper slowly zooms and drifts, and its shade goes
+        Box(Modifier.fillMaxSize().graphicsLayer {
+            val t = state.saver.frameMs
+            if (t != 0L) {
+                val (x, y, k) = state.saver.view(t)
+                scaleX = k; scaleY = k
+                transformOrigin = androidx.compose.ui.graphics.TransformOrigin(x / 1920f, y / 1080f)
+            }
+        }) { Background(state.wall, c.wallpaperOn, dim, shade = { val t = state.saver.frameMs; if (t == 0L) 1f else 1f - state.saver.progress(t) }) }
         // under Settings only the wallpaper shows (as in the webOS app), the rest only while Settings peeks aside to show a change; the rest stays put, ready for when Settings closes
         // pixel shift moves the cards and the row a few pixels once a minute (Plates.shiftAt); the wallpaper stays
         val shift = if (c.pixelShift) Plates.shiftAt(nowMs) else 0 to 0
@@ -308,30 +339,41 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
             alpha = if (state.screen == Screen.SETTINGS) state.peek else 1f
             translationX = shift.first * density; translationY = shift.second * density
         }) {
+        // under the screen saver the cards fade a beat after the row
+        Box(Modifier.fillMaxSize().graphicsLayer { val t = state.saver.frameMs; alpha = if (t == 0L) 1f else 1f - state.saver.cards(t) }) {
         board.cards.forEach { (id, rect) ->
             when (id) {
-                Plates.CardId.CLOCK -> Plate(rect, state.wall, look, before, glass, c.shadows) { ClockCard(now, c, board.narrow) }
+                Plates.CardId.CLOCK -> Plate(rect, state.wall, look, before, glass, c.shadows, shift = shift) { ClockCard(now, c, board.narrow) }
                 Plates.CardId.WEATHER -> weatherView?.let { v ->
-                    Plate(rect, state.wall, look, before, glass, c.shadows, zone == Zone.WEATHER) { WeatherCard(v, c.cardSize / 100f, now, zone == Zone.WEATHER) }
+                    Plate(rect, state.wall, look, before, glass?.forFocusable(), c.shadows, zone == Zone.WEATHER, shift) { WeatherCard(v, c.cardSize / 100f, now, zone == Zone.WEATHER) }
                 }
-                Plates.CardId.CALENDAR -> Plate(rect, state.wall, look, before, glass, c.shadows, zone == Zone.CALENDAR) {
+                Plates.CardId.CALENDAR -> Plate(rect, state.wall, look, before, glass?.forFocusable(), c.shadows, zone == Zone.CALENDAR, shift) {
                     CalendarCard(
                         calendar, dayOffset, nowMs, c.clock24, zone == Zone.CALENDAR, monthMode, month, dayDir, c.cardSize / 100f, state.calendarLoading,
                         headFocus = calHead, scroll = calScroll, onMaxScroll = { calMax = it },
                     )
                 }
-                Plates.CardId.NEWS -> Plate(rect, state.wall, look, before, glass, c.shadows, zone == Zone.NEWS) {
+                Plates.CardId.NEWS -> Plate(rect, state.wall, look, before, glass?.forFocusable(), c.shadows, zone == Zone.NEWS, shift) {
                     NewsCard(news?.items, state.newsLoading, newsPage, newsSel, zone == Zone.NEWS && active, rect.h.toFloat(), newsK, nowMs)
                 }
-                Plates.CardId.QUOTE -> Plate(rect, state.wall, look, before, glass, c.shadows) { QuoteCard(quote, state.quoteLoading, rect.h.toFloat(), newsK) }
+                Plates.CardId.QUOTE -> Plate(rect, state.wall, look, before, glass, c.shadows, shift = shift) { QuoteCard(quote, state.quoteLoading, rect.h.toFloat(), newsK) }
             }
+        }
         }
         Dock(
             items, selected, active && zone == Zone.DOCK && menu == null, fast, movingKey, dock, c.tileShape, c.labelsSelectedOnly,
             Modifier.align(Alignment.BottomStart).fillMaxWidth()
                 .padding(start = c.sideMargin.dp, end = c.sideMargin.dp, bottom = c.bottomMargin.dp)
-                .height((dock.tileH + dock.labelBlock).dp),
+                .height((dock.tileH + dock.labelBlock).dp)
+                // under the screen saver the row sinks 60 px and fades
+                .graphicsLayer { val t = state.saver.frameMs; val r = if (t == 0L) 0f else state.saver.row(t); translationY = (SaverState.ROW_SINK * r + laneDrop) * density; alpha = 1f - r },
         )
+        // the line over the row: a green round icon, the news and a dimmer note, over the wallpaper with a soft shadow
+        if (laneShow > 0.01f) state.update?.let { u ->
+            val focusTop = Plates.SCREEN_H - c.bottomMargin - (dock.tileH + dock.labelBlock) - dock.tileH * (Plates.FOCUS_SCALE - 1) + laneDrop
+            UpdateLane(str(R.string.update_out, u.version), "· " + str(R.string.update_out_text), c.sideMargin.toFloat(), focusTop - Plates.LANE_BELOW - Plates.LANE_H,
+                Modifier.graphicsLayer { val t = state.saver.frameMs; alpha = laneShow * (if (t == 0L) 1f else 1f - state.saver.row(t)) })
+        }
         if (moving != null) {
             Hint(str(R.string.move_the_app_ok_when_done), Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp))
         }
@@ -365,5 +407,19 @@ private fun AppMenu(title: String, labels: List<String>, at: Int) {
                 )
             }
         }
+    }
+}
+
+/** The line over the row (a new version): a round green icon with the download arrow, the words, and a dimmer note after them. */
+@Composable
+private fun UpdateLane(title: String, note: String, x: Float, y: Float, modifier: Modifier) {
+    val shadow = androidx.compose.ui.graphics.Shadow(Color(0x8C000000), androidx.compose.ui.geometry.Offset(0f, 1f), 10f)
+    Row(modifier.offset(x.dp, y.dp).height(Plates.LANE_H.dp), verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.size(32.dp).background(NoticeKind.UPDATE.color, androidx.compose.foundation.shape.CircleShape), contentAlignment = Alignment.Center) {
+            LineGlyph(Glyph.DOWNLOAD, Modifier.size(18.dp), Color.White, 2.4f)
+        }
+        Spacer(Modifier.width(12.dp))
+        BasicText(title, style = text(22f, 500, Color.White.copy(alpha = 0.88f)).copy(shadow = shadow), maxLines = 1)
+        BasicText(" $note", style = text(22f, 400, Color.White.copy(alpha = 0.55f)).copy(shadow = shadow), maxLines = 1)
     }
 }

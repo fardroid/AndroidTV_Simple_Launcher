@@ -60,7 +60,7 @@ fun WeatherGlyph(icon: WeatherIcon, modifier: Modifier, color: Color = Hue.textP
     Canvas(modifier) { drawIcon(shape, c, 1.5f) }
 }
 
-enum class Glyph { GEAR, TV, DOWNLOAD, CHEVRON_LEFT, CHEVRON_RIGHT }
+enum class Glyph { GEAR, TV, DOWNLOAD, CHEVRON_LEFT, CHEVRON_RIGHT, INFO, ALERT, CHECK }
 
 private fun glyphIcon(g: Glyph): Icon = when (g) {
     Glyph.GEAR -> Icon(listOf("M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"), listOf(Triple(12f, 12f, 3.2f)))
@@ -68,6 +68,10 @@ private fun glyphIcon(g: Glyph): Icon = when (g) {
     Glyph.DOWNLOAD -> Icon(listOf("M12 4v10.5M7.5 10.5L12 15l4.5-4.5M5 19.5h14"))
     Glyph.CHEVRON_LEFT -> Icon(listOf("M15 5l-7 7 7 7"))
     Glyph.CHEVRON_RIGHT -> Icon(listOf("M9 5l7 7-7 7"))
+    // the banners' round icons (ui/Notices.kt): an "i", an "!" and a tick
+    Glyph.INFO -> Icon(listOf("M12 11v7M12 6.5v.3"))
+    Glyph.ALERT -> Icon(listOf("M12 5.5v8.5M12 18v.3"))
+    Glyph.CHECK -> Icon(listOf("M5.5 12.5l4.2 4.2 8.8-9.2"))
 }
 
 @Composable

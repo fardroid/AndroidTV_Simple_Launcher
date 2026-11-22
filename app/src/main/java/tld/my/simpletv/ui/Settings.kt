@@ -55,6 +55,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -80,7 +88,8 @@ import tld.my.simpletv.Apps
 import tld.my.simpletv.BuildConfigInfo
 import tld.my.simpletv.Cal
 import tld.my.simpletv.City
-import tld.my.simpletv.ClockColors
+import tld.my.simpletv.DimMode
+import tld.my.simpletv.GlassKind
 import tld.my.simpletv.Config
 import tld.my.simpletv.Feeds
 import tld.my.simpletv.Gallery
@@ -198,8 +207,8 @@ private fun resetLook(c: Config): Config {
     val d = Config()
     return c.copy(
         iconScale = d.iconScale, showLabels = d.showLabels, labelsSelectedOnly = d.labelsSelectedOnly, tileShape = d.tileShape, sideMargin = d.sideMargin, bottomMargin = d.bottomMargin,
-        cardSize = d.cardSize, plates = d.plates, glass = d.glass, frost = d.frost, shadows = d.shadows,
-        clock24 = d.clock24, clockSize = d.clockSize, clockFont = d.clockFont, clockWeight = d.clockWeight, clockColor = d.clockColor,
+        cardSize = d.cardSize, plates = d.plates, glass = d.glass, glassKind = d.glassKind, frost = d.frost, shadows = d.shadows,
+        clock24 = d.clock24, clockSize = d.clockSize, clockFont = d.clockFont, clockWeight = d.clockWeight,
         showDate = d.showDate, dateSize = d.dateSize,
     )
 }
@@ -237,7 +246,15 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
     val where = page?.title ?: section.name
 
     LaunchedEffect(onGallery, state.photosVersion) {
-        if (onGallery) folders = withContext(Dispatchers.IO) { Gallery.folders(context) }
+        if (onGallery) {
+            folders = withContext(Dispatchers.IO) { Gallery.folders(context, Gallery.collection) }
+            // the collection's list from GitHub, then its groups among the folders
+            val photos = withContext(Dispatchers.IO) { state.collection.list() }
+            if (photos.isNotEmpty() && photos !== Gallery.collection) {
+                Gallery.collection = photos
+                folders = withContext(Dispatchers.IO) { Gallery.folders(context, photos) }
+            }
+        }
     }
     val canReadDevice = remember(onGallery, state.photosVersion) { Gallery.canReadDevice(context) }
     /** the tiles on screen: the folders (and one asking for the box's pictures), or the open folder's pictures */
@@ -254,7 +271,15 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
     }
 
     fun openGallery() { picks.clear(); picks.addAll(c.wallpaperPicks); folderIn = null; galleryAt = 0; open(Page.Pictures) }
-    fun leaveGallery() { set { it.copy(wallpaperPicks = picks.toList()) }; back() }
+    fun leaveGallery() {
+        val chosen = picks.toList()
+        set { it.copy(wallpaperPicks = chosen) }
+        // the ticked photos of the collection come in the background (a banner only while some are still to come)
+        state.collection.want(chosen)
+        val coming = state.collection.missing(chosen)
+        if (coming > 0) state.notices.show(tld.my.simpletv.ui.NoticeKind.DOWNLOAD, str(R.string.wallpaper_downloads, plural(R.plurals.pictures_n, coming)))
+        back()
+    }
 
     val items: List<Item> = when (page) {
         Page.CityPage -> buildList {
@@ -347,10 +372,15 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                 add(range(str(R.string.bottom_margin), str(R.string.space_below_the_row), row, c.bottomMargin, 0, 200, 10, " px") { v -> set { it.copy(bottomMargin = v) } })
                 val cards = str(R.string.widgets)
                 add(choice(str(R.string.font), str(R.string.for_the_clock_the_date_the), cards, Fonts.ALL.map { it.id to it.label }, c.clockFont) { v -> set { it.copy(clockFont = v) } })
+                add(choice(str(R.string.clock_weight), str(R.string.from_thin_to_bold_digits), cards, Fonts.WEIGHTS.map { it to weightText(it) }, c.clockWeight) { v -> set { it.copy(clockWeight = v) } })
                 add(range(str(R.string.text_size), str(R.string.all_the_text_on_the_weather), cards, c.cardSize, 60, 160, 5, "%") { v -> set { it.copy(cardSize = v) } })
                 add(choice(str(R.string.card_colour), str(R.string.auto_all_the_cards_turn_light), cards, PlateMode.entries.map { it to it.label }, c.plates) { v -> set { it.copy(plates = v) } })
-                if (c.wallpaperOn) add(Toggle(str(R.string.frosted_glass), str(R.string.the_cards_blur_the_picture_behind), cards, c.glass) { v -> set { it.copy(glass = v) } })
-                if (c.wallpaperOn && c.glass) add(range(str(R.string.frost), str(R.string.how_much_the_glass_blurs_the), cards, c.frost, 30, 100, 10, "%") { v -> set { it.copy(frost = v) } })
+                // Glass: off, frosted or liquid (the switch of Frosted glass before); the frost goes for both kinds
+                if (c.wallpaperOn) add(choice(str(R.string.glass), str(R.string.glass_description), cards,
+                    listOf<Pair<GlassKind?, String>>(null to str(R.string.off)) + GlassKind.entries.map { it to it.label }, if (c.glass) c.glassKind else null) { v ->
+                    set { if (v == null) it.copy(glass = false) else it.copy(glass = true, glassKind = v) } })
+                if (c.wallpaperOn && c.glass) add(choice(str(R.string.frost), str(R.string.how_much_the_glass_blurs_the), cards,
+                    (0..100 step 10).map { it to if (it == 0) str(R.string.off) else "$it%" }, c.frost / 10 * 10) { v -> set { it.copy(frost = v) } })
                 add(Toggle(str(R.string.shadows), str(R.string.a_soft_shadow_under_the_clock), cards, c.shadows) { v -> set { it.copy(shadows = v) } })
                 add(Toggle(str(R.string.pixel_shift_oled), str(R.string.the_clock_the_cards_and_the), cards, c.pixelShift) { v -> set { it.copy(pixelShift = v) } })
             }
@@ -358,11 +388,9 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                 val clock = str(R.string.clock)
                 add(choice(str(R.string.format), str(R.string.n12_hour_or_24_hour), clock, listOf(true to str(R.string.n24_hour), false to str(R.string.n12_hour_am_pm)), c.clock24) { v -> set { it.copy(clock24 = v) } })
                 add(range(str(R.string.size), str(R.string.the_height_of_the_digits), clock, c.clockSize, 80, 220, 10, " px") { v -> set { it.copy(clockSize = v) } })
-                add(choice(str(R.string.weight), str(R.string.from_thin_to_bold_digits), clock, Fonts.WEIGHTS.map { it to weightText(it) }, c.clockWeight) { v -> set { it.copy(clockWeight = v) } })
-                add(choice(str(R.string.colour), str(R.string.white_is_hard_to_read_on), clock, ClockColors.ALL.map { it.id to it.label }, c.clockColor) { v -> set { it.copy(clockColor = v) } })
-                val date = str(R.string.date)
-                add(Toggle(str(R.string.show_the_date), str(R.string.the_weekday_and_the_date_beside), date, c.showDate) { v -> set { it.copy(showDate = v) } })
-                if (c.showDate) add(range(str(R.string.date_size), str(R.string.the_size_of_the_weekday_and), date, c.dateSize, 60, 160, 5, "%") { v -> set { it.copy(dateSize = v) } })
+                // the date in the clock's group, the weight with the font in Appearance (Simple LG launcher 2.2.5)
+                add(Toggle(str(R.string.show_the_date), str(R.string.the_weekday_and_the_date_beside), clock, c.showDate) { v -> set { it.copy(showDate = v) } })
+                if (c.showDate) add(range(str(R.string.date_size), str(R.string.the_size_of_the_weekday_and), clock, c.dateSize, 60, 160, 5, "%") { v -> set { it.copy(dateSize = v) } })
                 val weather = str(R.string.weather)
                 add(Toggle(str(R.string.show_the_weather), str(R.string.the_temperature_and_the_forecast), weather, c.weatherOn) { v -> set { it.copy(weatherOn = v) } })
                 add(Action(str(R.string.city), str(R.string.pick_a_city_from_the_list), weather, c.city?.name ?: str(R.string.not_chosen), opens = true) { open(Page.CityPage) })
@@ -389,6 +417,13 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                     add(choice(str(R.string.change_every), str(R.string.how_long_each_picture_stays_on), show, Config.INTERVALS.map { it to interval(it) }, c.intervalSec) { v -> set { it.copy(intervalSec = v) } })
                     add(Toggle(str(R.string.shuffle), str(R.string.random_order_off_in_turn), show, c.shuffle) { v -> set { it.copy(shuffle = v) } })
                 }
+                if (c.wallpaperOn) {
+                    val brightness = str(R.string.brightness)
+                    add(choice(str(R.string.dim_the_picture), str(R.string.dim_description), brightness, DimMode.entries.map { it to it.label }, c.dim) { v -> set { it.copy(dim = v) } })
+                    if (c.dim != DimMode.OFF) add(range(str(R.string.dimming), str(R.string.how_much_darker), brightness, c.dimStrength, 10, 70, 10, "%") { v -> set { it.copy(dimStrength = v) } })
+                }
+                add(choice(str(R.string.screen_saver), str(R.string.screen_saver_description), str(R.string.screen_saver),
+                    Config.SAVER_MINUTES.map { it to if (it == 0) str(R.string.off) else str(R.string.after_n, interval(it * 60)) }, c.saverMinutes) { v -> set { it.copy(saverMinutes = v) } })
                 val folder = (Wallpapers.folder(context)?.absolutePath ?: "/sdcard/Android/data/tld.my.simpletv/files/wallpapers") + "/"
                 add(Info(str(R.string.picture_folder), str(R.string.add_your_own_pictures_from_a, folder), str(R.string.your_own_pictures), "adb push"))
             }
@@ -428,10 +463,11 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
     if (items.isNotEmpty() && selected !in items.indices) selected = items.lastIndex
 
     // the rows whose change shows on the home screen: Settings steps aside for a moment (as in the webOS app)
-    val peekLabels = remember(Lang.current) { setOf(str(R.string.format), str(R.string.size), str(R.string.weight), str(R.string.colour), str(R.string.show_the_date), str(R.string.date_size), str(R.string.temperature_unit)) }
+    val peekLabels = remember(Lang.current) { setOf(str(R.string.format), str(R.string.size), str(R.string.show_the_date), str(R.string.date_size), str(R.string.temperature_unit)) }
     val peekAnim = remember { Animatable(0f) }
     var peekBar by remember { mutableStateOf<Pair<String, String>?>(null) }
     var peekStamp by remember { mutableStateOf(0) }
+    var rowBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
     fun showsOnHome(item: Item?) = page == null && item != null && (item is Step || item is Toggle) &&
         (section == Section.LOOK && item.label != str(R.string.pixel_shift_oled) || section == Section.WIDGETS && item.label in peekLabels)
     fun peekAt(item: Item, value: String) { if (showsOnHome(item)) { peekBar = item.label to value; peekStamp++ } }
@@ -537,7 +573,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
             BasicText(if (onGallery) str(if (folderIn == null) R.string.choose_where_the_pictures_are_back_returns else R.string.ok_ticks_pictures_for_a_slideshow_or_opens) else if (onGrid && zone == SetZone.CONTENT) str(R.string.ok_shows_or_hides_an_app) else hint, Modifier.padding(top = 10.dp, bottom = 30.dp), style = text(21f, 400, Ui.muted))
             if (onGallery) GalleryGrid(folders, folderIn, if (zone == SetZone.CONTENT) galleryAt else -2, picks, canReadDevice, Modifier.weight(1f))
             else if (onGrid) AppsGrid(gridApps, c.hidden, if (zone == SetZone.CONTENT) appAt else -2, Modifier.weight(1f))
-            else OptionList(items, Modifier.weight(1f), where, if (zone == SetZone.CONTENT) selected else -1, editing, inputFocus) { editing = false; keys.refocus() }
+            else OptionList(items, Modifier.weight(1f), where, if (zone == SetZone.CONTENT) selected else -1, editing, inputFocus, { rowBounds = it }) { editing = false; keys.refocus() }
             val footer = when {
                 zone != SetZone.CONTENT -> ""
                 onGallery -> if (galleryAt == -1) str(R.string.nothing_ticked_all_the_pictures_show) else galleryFooter(folders, folderIn, galleryAt, picks)
@@ -548,23 +584,51 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
             BasicText(footer, Modifier.padding(start = 24.dp, top = 16.dp, bottom = 56.dp).heightIn(min = 64.dp), style = text(22f, 400, Hue.textSecondary, 1.45f), maxLines = 3)
         }
     }
-    // the setting's name and its value in a bar at the top, over the home screen
-    peekBar?.let { (label, value) -> PeekBar(label, value, peekAnim.value) }
+    // a change being shown on the home screen: the row stays where it is, on a soft halo of Settings' own colour, and the rest
+    // of Settings fades (as in the webOS app)
+    if (peekBar != null || peekAnim.value > 0f) rowBounds?.let { b -> items.getOrNull(selected)?.let { PeekRow(it, b, peekAnim.value) } }
     }
 }
 
-/** The name and the new value of a setting that is showing on the home screen. */
+/** The row of a setting that is showing its change on the home screen, kept where it is in Settings (`bounds`, in the screen's
+ *  pixels), on a halo of Settings' own colour (the theme's) that runs on past the right edge of the screen: the numbers of the
+ *  webOS app's (a 48 px margin, fading over 160 px, 88 %, and a glow along the right edge). */
 @Composable
-private fun PeekBar(label: String, value: String, p: Float) {
-    Box(Modifier.fillMaxWidth().padding(top = 56.dp), contentAlignment = Alignment.TopCenter) {
-        Row(
-            Modifier.graphicsLayer { alpha = p; translationY = -(1f - p) * 20f * density }.height(76.dp)
-                .background(Ui.pill, RoundedCornerShape(38.dp)).padding(horizontal = 32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            BasicText(label, style = text(27f, 500, Ui.onPill), maxLines = 1)
-            Spacer(Modifier.width(36.dp))
-            BasicText(value, style = text(27f, 400, Ui.onPillValue), maxLines = 1)
+private fun PeekRow(item: Item, bounds: androidx.compose.ui.geometry.Rect, p: Float) {
+    val density = LocalDensity.current.density
+    val x = bounds.left / density; val y = bounds.top / density
+    val w = bounds.width / density; val h = bounds.height / density
+    Box(Modifier.fillMaxSize().drawBehind {
+        val shade = Ui.screen.copy(alpha = 0.88f * p)
+        val pad = 48f * density; val fade = 160f * density
+        // the halo: the row's outline grown by the margin, to past the right edge, blurred over the fade
+        drawIntoCanvas { c ->
+            val away = size.width + 6000f
+            val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                color = shade.copy(alpha = 1f).toArgb()
+                setShadowLayer(fade * 0.5f, away, 0f, shade.toArgb())
+            }
+            val r = (22f + 48f) * density
+            c.nativeCanvas.drawRoundRect(bounds.left - pad - away, bounds.top - pad, size.width + 400f * density - away, bounds.bottom + pad, r, r, paint)
+        }
+        // the glow along the right edge, spreading up and down from the row
+        drawRect(Brush.radialGradient(listOf(shade, shade.copy(alpha = shade.alpha * 0.55f), Color.Transparent),
+            center = androidx.compose.ui.geometry.Offset(size.width, bounds.center.y), radius = 1330f * density))
+    }) {
+        Box(Modifier.offset(x.dp, y.dp).size(w.dp, h.dp).background(Ui.pill, RoundedCornerShape(22.dp)).padding(horizontal = 24.dp, vertical = 10.dp), contentAlignment = Alignment.CenterStart) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                BasicText(item.label, Modifier.weight(1f), style = text(27f, 400, Ui.onPill), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Spacer(Modifier.width(30.dp))
+                when (item) {
+                    is Toggle -> SwitchMark(item.on, true)
+                    is Step -> Row(verticalAlignment = Alignment.CenterVertically) {
+                        BasicText("‹", Modifier.width(30.dp).graphicsLayer { alpha = 0.85f }, style = text(34f, 400, Ui.onPillValue, 1f).copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center))
+                        BasicText(item.texts.getOrElse(item.index) { "" }, style = text(25f, 400, Ui.onPillValue), maxLines = 1)
+                        BasicText("›", Modifier.width(30.dp).graphicsLayer { alpha = 0.85f }, style = text(34f, 400, Ui.onPillValue, 1f).copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center))
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 }
@@ -599,7 +663,7 @@ private fun NavItem(s: Section, current: Boolean, focused: Boolean) {
 // ---------- the rows, in their groups ----------
 
 @Composable
-private fun OptionList(items: List<Item>, modifier: Modifier, where: String, selected: Int, editing: Boolean, inputFocus: FocusRequester, doneEditing: () -> Unit) {
+private fun OptionList(items: List<Item>, modifier: Modifier, where: String, selected: Int, editing: Boolean, inputFocus: FocusRequester, onFocusedRow: (androidx.compose.ui.geometry.Rect) -> Unit = {}, doneEditing: () -> Unit) {
     // the rows with their headings: a heading before the first row of each named group
     data class Entry(val heading: String?, val index: Int, val first: Boolean, val last: Boolean)
     val entries = buildList {
@@ -630,14 +694,15 @@ private fun OptionList(items: List<Item>, modifier: Modifier, where: String, sel
             } else {
                 val item = items[e.index]
                 val top = if (e.first && n > 0 && entries[n - 1].heading == null) 30.dp else 0.dp
-                RowView(item, e.first, e.last, top, e.index == selected, e.index - 1 == selected && !e.first, editing && e.index == selected, inputFocus, doneEditing)
+                RowView(item, e.first, e.last, top, e.index == selected, e.index - 1 == selected && !e.first, editing && e.index == selected, inputFocus, onFocusedRow, doneEditing)
             }
         }
     }
 }
 
 @Composable
-private fun RowView(item: Item, first: Boolean, last: Boolean, gapAbove: androidx.compose.ui.unit.Dp, on: Boolean, afterFocused: Boolean, editing: Boolean, inputFocus: FocusRequester, doneEditing: () -> Unit) {
+private fun RowView(item: Item, first: Boolean, last: Boolean, gapAbove: androidx.compose.ui.unit.Dp, on: Boolean, afterFocused: Boolean, editing: Boolean, inputFocus: FocusRequester,
+    onFocusedRow: (androidx.compose.ui.geometry.Rect) -> Unit, doneEditing: () -> Unit) {
     val bg by animateColorAsState(if (on) Ui.pill else Color.Transparent, tween(120), label = "pill")
     val labelColor = if (on) Ui.onPill else Hue.textPrimary
     val valueColor = if (on) Ui.onPillValue else Hue.textSecondary
@@ -650,7 +715,10 @@ private fun RowView(item: Item, first: Boolean, last: Boolean, gapAbove: android
         // hairlines between the rows of a group, hidden around the focused one
         if (!first && !on && !afterFocused) Box(Modifier.padding(horizontal = 24.dp).fillMaxWidth().height(1.dp).background(Ui.hairline))
         Row(
-            Modifier.fillMaxWidth().heightIn(min = 76.dp).background(bg, RoundedCornerShape(22.dp)).padding(horizontal = 24.dp, vertical = 10.dp),
+            Modifier.fillMaxWidth().heightIn(min = 76.dp)
+                // where the focused row is on the screen: a change shown on the home screen keeps it there (PeekRow)
+                .then(if (on) Modifier.onGloballyPositioned { onFocusedRow(it.boundsInRoot()) } else Modifier)
+                .background(bg, RoundedCornerShape(22.dp)).padding(horizontal = 24.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             item.icon?.let { Image(androidx.compose.ui.res.painterResource(it), null, Modifier.padding(end = 28.dp).size(40.dp), colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(if (on) Ui.onPillValue else Hue.textSecondary)) }
@@ -840,8 +908,14 @@ private fun TileFrame(focused: Boolean, content: @Composable androidx.compose.fo
 
 @Composable
 private fun PictureTile(id: String, ticked: Boolean, focused: Boolean) {
+    val context = LocalContext.current
     TileFrame(focused) {
         Thumb(id, Modifier.fillMaxSize())
+        // a photo of the collection not on the box yet: it is downloaded when ticked
+        if (tld.my.simpletv.Collection.isPhoto(id) && !ticked && tld.my.simpletv.Collection.onBox(context, id) == null)
+            Box(Modifier.align(Alignment.TopEnd).padding(8.dp).size(32.dp).background(Color(0x99000000), CircleShape), contentAlignment = Alignment.Center) {
+                LineGlyph(Glyph.DOWNLOAD, Modifier.size(20.dp), Color.White, 2f)
+            }
         if (ticked) Box(Modifier.align(Alignment.TopEnd).padding(8.dp).size(32.dp).background(Color(0xE6F2F2F7), CircleShape), contentAlignment = Alignment.Center) {
             BasicText("✓", style = text(19f, 700, Ui.onPill, 1f))
         }

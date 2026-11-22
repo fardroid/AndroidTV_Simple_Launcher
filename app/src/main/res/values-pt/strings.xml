@@ -142,12 +142,12 @@
     <string name="cards">Cartões</string>
     <string name="text_size">Tamanho do texto</string>
     <string name="all_the_text_on_the_weather">Todo o texto nos cartões de clima e calendário.</string>
-    <string name="card_colour">Cor dos cartões</string>
+    <string name="card_colour">Fundo dos widgets</string>
     <string name="auto_all_the_cards_turn_light">Auto: todos os cartões ficam claros ou escuros juntos, conforme a imagem atrás deles, para que o texto continue legível em cada um.</string>
     <string name="frosted_glass">Vidro fosco</string>
     <string name="the_cards_blur_the_picture_behind">Os cartões desfocam a imagem atrás deles.</string>
     <string name="frost">Fosco</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">Quanto o vidro desfoca a imagem atrás dele: 100% é o máximo; com 30% a imagem aparece mais nítida.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">Quanto o vidro desfoca a imagem atrás: 100% é o máximo; desligado deixa-o transparente, e o vidro líquido só a refrata.</string>
     <string name="shadows">Sombras</string>
     <string name="a_soft_shadow_under_the_clock">Uma sombra suave sob o relógio e os cartões. Sem ela, o aparelho tem um pouco menos para desenhar.</string>
     <string name="pixel_shift_oled">Deslocamento de pixels (OLED)</string>
@@ -326,4 +326,35 @@
     <string name="theme_lavender">Lavanda</string>
     <string name="theme_graphite">Grafite</string>
     <string name="colour_theme_description">O fundo sem imagem, as cores do texto, dos cartões e dos ícones das apps, e destes ecrãs. O preto OLED deixa apagados os píxeis sem uso.</string>
+    <string name="glass">Vidro</string>
+    <string name="glass_frosted">Fosco</string>
+    <string name="glass_liquid">Líquido</string>
+    <string name="glass_description">Fosco: os widgets desfocam a imagem atrás. Líquido: também a curvam nas bordas, como vidro grosso.</string>
+    <string name="clock_weight">Espessura dos dígitos</string>
+    <string name="off">Desativado</string>
+    <string name="at_night">À noite</string>
+    <string name="always">Sempre</string>
+    <string name="dim_the_picture">Escurecer a imagem</string>
+    <string name="dim_description">Escurece a imagem de fundo: descansa os olhos e o texto destaca-se mais. À noite: do pôr ao nascer do sol na cidade da meteorologia (escurece aos poucos durante o crepúsculo); sem cidade escolhida, das 19:00 às 7:00.</string>
+    <string name="dimming">Escurecimento</string>
+    <string name="how_much_darker">Quanto a imagem escurece.</string>
+    <string name="brightness">Brilho</string>
+    <string name="screen_saver">Proteção de tela</string>
+    <string name="after_n">Após %1$s</string>
+    <string name="screen_saver_description">Após esse tempo sem nenhuma tecla, só o papel de parede fica na tela. Qualquer tecla traz tudo de volta.</string>
+    <string name="update_downloading">A transferir a versão %1$s…</string>
+    <string name="update_installing">A instalar a atualização…</string>
+    <string name="update_download_failed">Não foi possível transferir a atualização: %1$s</string>
+    <string name="update_install_failed">Não foi possível instalar a atualização: %1$s</string>
+    <string name="update_out">Saiu a versão %1$s do launcher</string>
+    <string name="update_out_text">Prima «Atualizar» no fim da fila</string>
+    <string name="update_allow">Permita que o launcher instale apps</string>
+    <string name="update_allow_text">Ative na ecrã que se abriu e prima «Atualizar» de novo</string>
+    <string name="the_file_came_damaged">o ficheiro chegou danificado</string>
+    <string name="collection">Coleção</string>
+    <string name="collection_mountains">Montanhas</string>
+    <string name="collection_nature">Natureza</string>
+    <string name="collection_space">Espaço</string>
+    <string name="collection_abstract">Abstrato</string>
+    <string name="wallpaper_downloads">Os fundos são transferidos em segundo plano: %1$s</string>
 </resources>

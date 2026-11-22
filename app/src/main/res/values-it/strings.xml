@@ -142,12 +142,12 @@
     <string name="cards">Schede</string>
     <string name="text_size">Dimensione del testo</string>
     <string name="all_the_text_on_the_weather">Tutto il testo sulle schede del meteo e del calendario.</string>
-    <string name="card_colour">Colore delle schede</string>
+    <string name="card_colour">Sfondo dei widget</string>
     <string name="auto_all_the_cards_turn_light">Auto: tutte le schede diventano chiare o scure insieme, in base all\'immagine dietro di esse, così il testo resta leggibile su ciascuna.</string>
     <string name="frosted_glass">Vetro smerigliato</string>
     <string name="the_cards_blur_the_picture_behind">Le schede sfocano l\'immagine dietro di esse.</string>
     <string name="frost">Satinatura</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">Quanto il vetro sfoca l\'immagine dietro: 100% al massimo, al 30% l\'immagine si vede più nitida.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">Quanto il vetro sfoca l\'immagine dietro: 100% al massimo; disattivato resta trasparente e il vetro liquido la rifrange soltanto.</string>
     <string name="shadows">Ombre</string>
     <string name="a_soft_shadow_under_the_clock">Un’ombra morbida sotto l’orologio e le schede. Senza, il box ha un po’ meno da disegnare.</string>
     <string name="pixel_shift_oled">Spostamento dei pixel (OLED)</string>
@@ -326,4 +326,35 @@
     <string name="theme_lavender">Lavanda</string>
     <string name="theme_graphite">Grafite</string>
     <string name="colour_theme_description">Lo sfondo senza immagine, i colori del testo, delle schede e dei riquadri delle app, e di queste schermate. Il nero OLED lascia spenti i pixel inutilizzati.</string>
+    <string name="glass">Vetro</string>
+    <string name="glass_frosted">Smerigliato</string>
+    <string name="glass_liquid">Liquido</string>
+    <string name="glass_description">Smerigliato: i widget sfocano l\'immagine dietro. Liquido: la piegano anche ai bordi, come un vetro spesso.</string>
+    <string name="clock_weight">Spessore delle cifre</string>
+    <string name="off">No</string>
+    <string name="at_night">Di notte</string>
+    <string name="always">Sempre</string>
+    <string name="dim_the_picture">Attenua l\'immagine</string>
+    <string name="dim_description">Scurisce lo sfondo: riposa gli occhi e il testo risalta di più. Di notte: dal tramonto all\'alba nella città del meteo (si scurisce poco a poco durante il crepuscolo); senza una città scelta, dalle 19:00 alle 7:00.</string>
+    <string name="dimming">Attenuazione</string>
+    <string name="how_much_darker">Di quanto si scurisce l\'immagine.</string>
+    <string name="brightness">Luminosità</string>
+    <string name="screen_saver">Salvaschermo</string>
+    <string name="after_n">Dopo %1$s</string>
+    <string name="screen_saver_description">Dopo questo tempo senza premere tasti, sullo schermo resta solo lo sfondo. Qualsiasi tasto riporta tutto.</string>
+    <string name="update_downloading">Download della versione %1$s…</string>
+    <string name="update_installing">Installazione dell\'aggiornamento…</string>
+    <string name="update_download_failed">Impossibile scaricare l\'aggiornamento: %1$s</string>
+    <string name="update_install_failed">Impossibile installare l\'aggiornamento: %1$s</string>
+    <string name="update_out">È uscita la versione %1$s del launcher</string>
+    <string name="update_out_text">Premi «Aggiorna» alla fine della fila</string>
+    <string name="update_allow">Consenti al launcher di installare app</string>
+    <string name="update_allow_text">Attivalo nella schermata che si è aperta, poi premi di nuovo «Aggiorna»</string>
+    <string name="the_file_came_damaged">il file è arrivato danneggiato</string>
+    <string name="collection">Collezione</string>
+    <string name="collection_mountains">Montagne</string>
+    <string name="collection_nature">Natura</string>
+    <string name="collection_space">Spazio</string>
+    <string name="collection_abstract">Astratto</string>
+    <string name="wallpaper_downloads">Gli sfondi si scaricano in background: %1$s</string>
 </resources>

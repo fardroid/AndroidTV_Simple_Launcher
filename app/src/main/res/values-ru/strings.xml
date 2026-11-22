@@ -142,12 +142,12 @@
     <string name="cards">Карточки</string>
     <string name="text_size">Размер текста</string>
     <string name="all_the_text_on_the_weather">Весь текст на карточках погоды и календаря.</string>
-    <string name="card_colour">Цвет карточек</string>
+    <string name="card_colour">Подложка виджетов</string>
     <string name="auto_all_the_cards_turn_light">Авто: все карточки вместе становятся светлыми или тёмными в зависимости от картинки за ними, чтобы текст хорошо читался на каждой.</string>
     <string name="frosted_glass">Матовое стекло</string>
     <string name="the_cards_blur_the_picture_behind">Карточки размывают картинку под собой.</string>
     <string name="frost">Матовость</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">Насколько стекло размывает картинку под собой: 100% — сильнее всего, на 30% картинка видна чётче всего.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">Насколько стекло размывает картинку под собой: 100% — сильнее всего; если выключить, стекло прозрачное, и жидкое стекло только преломляет картинку.</string>
     <string name="shadows">Тени</string>
     <string name="a_soft_shadow_under_the_clock">Мягкая тень под часами и карточками. Без неё приставка рисует экран чуть легче.</string>
     <string name="pixel_shift_oled">Сдвиг пикселей (OLED)</string>
@@ -335,4 +335,35 @@
     <string name="theme_lavender">Лаванда</string>
     <string name="theme_graphite">Графит</string>
     <string name="colour_theme_description">Фон без картинки, цвета текста, виджетов, плиток приложений и этих экранов. Чёрная тема не зажигает лишние пиксели OLED.</string>
+    <string name="glass">Стекло</string>
+    <string name="glass_frosted">Матовое</string>
+    <string name="glass_liquid">Жидкое</string>
+    <string name="glass_description">Матовое: виджеты размывают картинку под собой. Жидкое: ещё и преломляют её у краёв, как толстое стекло.</string>
+    <string name="clock_weight">Толщина цифр часов</string>
+    <string name="off">Выкл.</string>
+    <string name="at_night">Ночью</string>
+    <string name="always">Всегда</string>
+    <string name="dim_the_picture">Затемнять картинку</string>
+    <string name="dim_description">Делает обои темнее: глазам спокойнее, текст заметнее. Ночью: от заката до рассвета в городе погоды (темнеет постепенно, пока идут сумерки); если город не выбран, с 19:00 до 7:00.</string>
+    <string name="dimming">Затемнение</string>
+    <string name="how_much_darker">Насколько картинка становится темнее.</string>
+    <string name="brightness">Яркость</string>
+    <string name="screen_saver">Заставка</string>
+    <string name="after_n">Через %1$s</string>
+    <string name="screen_saver_description">Через это время без нажатий на экране остаются одни обои. Любая кнопка возвращает всё.</string>
+    <string name="update_downloading">Скачиваю версию %1$s…</string>
+    <string name="update_installing">Устанавливаю обновление…</string>
+    <string name="update_download_failed">Не удалось скачать обновление: %1$s</string>
+    <string name="update_install_failed">Не удалось установить обновление: %1$s</string>
+    <string name="update_out">Вышла версия лаунчера %1$s</string>
+    <string name="update_out_text">Нажмите «Обновить» в конце ряда</string>
+    <string name="update_allow">Разрешите лаунчеру устанавливать приложения</string>
+    <string name="update_allow_text">Включите разрешение на открывшемся экране и нажмите «Обновить» ещё раз</string>
+    <string name="the_file_came_damaged">файл пришёл повреждённым</string>
+    <string name="collection">Коллекция</string>
+    <string name="collection_mountains">Горы</string>
+    <string name="collection_nature">Природа</string>
+    <string name="collection_space">Космос</string>
+    <string name="collection_abstract">Абстракции</string>
+    <string name="wallpaper_downloads">Обои скачиваются в фоне: %1$s</string>
 </resources>
