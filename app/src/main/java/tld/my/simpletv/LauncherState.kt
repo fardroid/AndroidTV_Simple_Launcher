@@ -27,6 +27,9 @@ enum class Screen { HOME, SETTINGS }
 
 enum class UpdateStatus { LOOKING, LATEST, FOUND, FAILED }
 
+/** the slideshow's step under the screen saver */
+const val SAVER_STEP_MS = 30_000L
+
 class LauncherState(private val context: Context, private val scope: CoroutineScope) {
     private val store = Store(context)
 
@@ -69,6 +72,41 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
     var homeReset by mutableStateOf(false)
         private set
     val wall = WallState()
+    /** the banners at the top of the screen (ui/Notices.kt) */
+    val notices = tld.my.simpletv.ui.NoticeState()
+    /** the cards' look as the home screen draws them now: the banners are drawn the same */
+    var cardLook by mutableStateOf(Plates.light())
+    var cardLookBefore by mutableStateOf<PlateLook?>(null)
+    var cardGlass by mutableStateOf<tld.my.simpletv.ui.GlassStyle?>(null)
+    /** the screen saver (ui/Saver.kt), and the last key (it counts from there) */
+    val saver = tld.my.simpletv.ui.SaverState()
+    private var lastInputMs = System.currentTimeMillis()
+    /** when the launcher came to the front last: a slideshow waits a little after it */
+    private var resumedAt = 0L
+
+    /** A key, or the Home button: while the screen saver shows it only wakes it (true: used up). */
+    fun input(): Boolean {
+        val now = System.currentTimeMillis()
+        lastInputMs = now
+        if (!saver.showing(now)) return false
+        saver.wake(now)
+        return true
+    }
+
+    /** The saver after the time set without a key, on any screen of the launcher; while it shows, a frame clock for its drift. */
+    private suspend fun saverLoop() {
+        while (true) {
+            val now = System.currentTimeMillis()
+            if (!saver.showing(now)) {
+                val minutes = config.saverMinutes
+                val due = lastInputMs + minutes * 60_000L
+                if (minutes <= 0 || now < due) { delay(if (minutes <= 0) 5_000L else minOf(5_000L, due - now + 1)); continue }
+                saver.start(now)
+            }
+            androidx.compose.runtime.withFrameMillis { saver.frameMs = System.currentTimeMillis() }
+        }
+    }
+
     /** liquid glass's bevels for the pictures on the screen (Lens.kt) */
     val lenses = tld.my.simpletv.ui.LensCache(scope)
     /** grows when the user answers the question about the box's pictures (the gallery looks again) */
@@ -130,8 +168,11 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
         reloadApps()
         work?.cancel()
         // on Compose's main dispatcher: it carries the frame clock the wallpaper's cross-fade runs on
+        lastInputMs = System.currentTimeMillis()
+        resumedAt = lastInputMs
         work = scope.launch(AndroidUiDispatcher.Main) {
             launch { tickClock() }
+            launch { saverLoop() }
             launch { slideshow() }
             // every 5 minutes; while there is nothing to show yet (the box still joining the network), again after 20 s
             launch { while (isActive) { delay(if (refreshWeather()) 5 * 60_000L else 20_000L) } }
@@ -143,6 +184,8 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
     }
 
     fun pause() {
+        // the launcher went to the back (an app, the box's own screen saver): the saver ends at once, under it
+        saver.stop()
         work?.cancel()
         work = null
     }
@@ -205,9 +248,13 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
         } else index = list.indexOf(wall.current?.id)
         if (list.size < 2) return
         while (true) {
-            // after coming back from an app the picture stays a little while: nothing changes the moment the screen returns
-            val wait = max(config.intervalSec * 1000L - (System.currentTimeMillis() - lastSlideAt), 12_000L)
-            delay(wait)
+            // after coming back from an app the picture stays a little while: nothing changes the moment the screen returns; under
+            // the screen saver a new picture every 30 s, whatever the slideshow's own time
+            while (true) {
+                val step = if (saver.on) SAVER_STEP_MS else config.intervalSec * 1000L
+                if (System.currentTimeMillis() >= max(lastSlideAt + step, resumedAt + 12_000L)) break
+                delay(500)
+            }
             index = if (config.shuffle) (list.indices - index).random() else (index + 1) % list.size
             val slide = withContext(Dispatchers.Default) { Wallpapers.load(context, list[index], w, h, config.frost) } ?: continue
             store.wallpaperIndex = index

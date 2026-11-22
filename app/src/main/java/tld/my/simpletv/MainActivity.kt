@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.lifecycle.lifecycleScope
 import tld.my.simpletv.ui.DesignScreen
@@ -38,6 +39,8 @@ class MainActivity : ComponentActivity() {
     private val keys = KeyTarget()
     private val reader = KeyReader()
     private var inFront = false
+    /** keys that woke the screen saver, until they are let go */
+    private val wokeWith = mutableSetOf<Int>()
 
     private val askPhotos = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.RequestPermission()) { state.photosAsked() }
 
@@ -62,6 +65,13 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(Unit) { keys.refocus = { runCatching { focus.requestFocus() } }; focus.requestFocus() }
                 Box(
                     Modifier.fillMaxSize().focusRequester(focus).focusable().onKeyEvent { e ->
+                        // the screen saver: any key only wakes it, and its repeats and release do nothing else
+                        val ne = e.nativeKeyEvent
+                        if (ne.keyCode in wokeWith) {
+                            if (ne.action == android.view.KeyEvent.ACTION_UP) wokeWith.remove(ne.keyCode)
+                            return@onKeyEvent true
+                        }
+                        if (ne.action == android.view.KeyEvent.ACTION_DOWN && state.input()) { wokeWith.add(ne.keyCode); return@onKeyEvent true }
                         when (val r = reader.read(e.nativeKeyEvent)) {
                             KeyRead.NotOurs -> false
                             KeyRead.Swallow -> true
@@ -73,7 +83,13 @@ class MainActivity : ComponentActivity() {
                     val font = state.config.clockFont
                     SideEffect { WidgetFont.id = font }
                     HomeScreen(state, keys, active = state.screen == Screen.HOME)
-                    if (state.screen == Screen.SETTINGS) SettingsPanel(state, keys)
+                    if (state.screen == Screen.SETTINGS) Box(Modifier.fillMaxSize().graphicsLayer {
+                        // Settings fades whole under the screen saver
+                        val now = state.saver.frameMs
+                        alpha = if (now == 0L) 1f else 1f - state.saver.progress(now)
+                    }) { SettingsPanel(state, keys) }
+                    // the banners, over every screen
+                    tld.my.simpletv.ui.Notices(state.notices, state.wall, state.cardLook, state.cardLookBefore, state.cardGlass, state.config.shadows)
                 }
             }
         }
@@ -83,7 +99,11 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         takeSettings(intent)
-        if (intent.hasCategory(Intent.CATEGORY_HOME) || intent.getBooleanExtra(EXTRA_FROM_HOME_KEY, false)) state.homePressed(whileShown = inFront)
+        if (intent.hasCategory(Intent.CATEGORY_HOME) || intent.getBooleanExtra(EXTRA_FROM_HOME_KEY, false)) {
+            // Home over the screen saver only wakes it
+            if (inFront && state.input()) return
+            state.homePressed(whileShown = inFront)
+        }
     }
 
     override fun onResume() {
@@ -103,8 +123,11 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    /** Settings handed over with adb (see the top of this file). */
+    /** Settings handed over with adb (see the top of this file), and for trying things out without a remote:
+     *  `--es notice "text"` shows a banner, `--ez saver true` starts the screen saver now. */
     private fun takeSettings(intent: Intent?) {
+        intent?.getStringExtra("notice")?.let { state.notices.show(tld.my.simpletv.ui.NoticeKind.INFO, it, intent.getStringExtra("noticeText").orEmpty()); intent.removeExtra("notice") }
+        if (intent?.getBooleanExtra("saver", false) == true) { state.saver.start(System.currentTimeMillis()); intent.removeExtra("saver") }
         val list = intent?.getStringArrayExtra("calendars") ?: return
         val urls = list.map { Cal.normalizeUrl(it) }.filter { Cal.validUrl(it) }
         if (urls.isNotEmpty()) state.update { it.copy(calendars = urls, calendarOn = true) }

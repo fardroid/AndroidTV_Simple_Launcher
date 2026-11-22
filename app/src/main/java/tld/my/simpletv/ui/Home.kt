@@ -288,7 +288,10 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
     val look = Plates.looks(c.plates, if (c.wallpaperOn) state.wall.current?.map?.let(::seen) else null, board, Themes.current.plate, Themes.current.mid)
     val before = state.wall.previous?.let { Plates.looks(c.plates, seen(it.map), board, Themes.current.plate, Themes.current.mid) }
     val glass = if (c.glass && c.wallpaperOn) GlassStyle(c.glassKind, dim, state.lenses) else null
-    if (glass?.kind == GlassKind.LIQUID) SideEffect { state.lenses.keep(listOf(state.wall.current, state.wall.previous)) }
+    SideEffect {
+        if (glass?.kind == GlassKind.LIQUID) state.lenses.keep(listOf(state.wall.current, state.wall.previous))
+        state.cardLook = look; state.cardLookBefore = before; state.cardGlass = glass
+    }
 
     // the news turn their pages by themselves every 20 s while the remote is elsewhere
     LaunchedEffect(newsOn, zone == Zone.NEWS, detail == null, newsPageCount, newsPage) {
@@ -306,7 +309,15 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
     }
 
     Box(Modifier.fillMaxSize()) {
-        Background(state.wall, c.wallpaperOn, dim)
+        // under the screen saver the wallpaper slowly zooms and drifts, and its shade goes
+        Box(Modifier.fillMaxSize().graphicsLayer {
+            val t = state.saver.frameMs
+            if (t != 0L) {
+                val (x, y, k) = state.saver.view(t)
+                scaleX = k; scaleY = k
+                transformOrigin = androidx.compose.ui.graphics.TransformOrigin(x / 1920f, y / 1080f)
+            }
+        }) { Background(state.wall, c.wallpaperOn, dim, shade = { val t = state.saver.frameMs; if (t == 0L) 1f else 1f - state.saver.progress(t) }) }
         // under Settings only the wallpaper shows (as in the webOS app), the rest only while Settings peeks aside to show a change; the rest stays put, ready for when Settings closes
         // pixel shift moves the cards and the row a few pixels once a minute (Plates.shiftAt); the wallpaper stays
         val shift = if (c.pixelShift) Plates.shiftAt(nowMs) else 0 to 0
@@ -314,6 +325,8 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
             alpha = if (state.screen == Screen.SETTINGS) state.peek else 1f
             translationX = shift.first * density; translationY = shift.second * density
         }) {
+        // under the screen saver the cards fade a beat after the row
+        Box(Modifier.fillMaxSize().graphicsLayer { val t = state.saver.frameMs; alpha = if (t == 0L) 1f else 1f - state.saver.cards(t) }) {
         board.cards.forEach { (id, rect) ->
             when (id) {
                 Plates.CardId.CLOCK -> Plate(rect, state.wall, look, before, glass, c.shadows) { ClockCard(now, c, board.narrow) }
@@ -332,11 +345,14 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
                 Plates.CardId.QUOTE -> Plate(rect, state.wall, look, before, glass, c.shadows) { QuoteCard(quote, state.quoteLoading, rect.h.toFloat(), newsK) }
             }
         }
+        }
         Dock(
             items, selected, active && zone == Zone.DOCK && menu == null, fast, movingKey, dock, c.tileShape, c.labelsSelectedOnly,
             Modifier.align(Alignment.BottomStart).fillMaxWidth()
                 .padding(start = c.sideMargin.dp, end = c.sideMargin.dp, bottom = c.bottomMargin.dp)
-                .height((dock.tileH + dock.labelBlock).dp),
+                .height((dock.tileH + dock.labelBlock).dp)
+                // under the screen saver the row sinks 60 px and fades
+                .graphicsLayer { val t = state.saver.frameMs; val r = if (t == 0L) 0f else state.saver.row(t); translationY = SaverState.ROW_SINK * r * density; alpha = 1f - r },
         )
         if (moving != null) {
             Hint(str(R.string.move_the_app_ok_when_done), Modifier.align(Alignment.BottomCenter).padding(bottom = 8.dp))
