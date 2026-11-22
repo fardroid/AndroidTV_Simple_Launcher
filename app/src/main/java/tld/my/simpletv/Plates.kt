@@ -166,6 +166,23 @@ object Plates {
         return Dock(w, h, label, if (c.showLabels) (label * 2.4f + 14).roundToInt() else 0)
     }
 
+    /** The line over the row (a new version): its height, the gap under it down to the top of the selected (grown) tile, and the
+     *  room it needs between the lowest card and that tile (as Simple LG launcher's home.cpp). */
+    const val LANE_H = 38f
+    const val LANE_BELOW = 23f
+    private const val LANE_ROOM = 84
+
+    /** How far the row goes down (as far as the bottom margin lets it) and the cards up, to make room for the line over the row. */
+    fun laneRoom(c: Config, board: Board): Pair<Int, Int> {
+        val d = dock(c)
+        val bottom = board.cards.values.filter { it.h > 0 }.maxOfOrNull { it.y + it.h } ?: return 0 to 0
+        val focusTop = SCREEN_H - c.bottomMargin - (d.tileH + d.labelBlock) - d.tileH * (FOCUS_SCALE - 1)
+        val need = max(0, LANE_ROOM - floor(focusTop - bottom).toInt())
+        val down = min(need, c.bottomMargin)
+        val up = min(need - down, max(0, boardTop(c) - 16))
+        return down to up
+    }
+
     /** The board keeps its size; it stands so that the space above it and the space down to the selected (grown) tile are the same. */
     fun boardTop(c: Config): Int {
         val d = dock(c)

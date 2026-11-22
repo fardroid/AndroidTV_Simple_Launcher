@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
 class Slide(
     val id: String,
     val image: ImageBitmap,
-    /** 480 x 270, blurred, with the screen's shade baked in: stretched over the whole screen it lines up with the picture */
+    /** 960 x 540, blurred, with the screen's shade baked in: stretched over the whole screen it lines up with the picture */
     val frost: ImageBitmap,
     /** 16 x 9 brightness values, 0 to 1 */
     val map: FloatArray
@@ -32,8 +32,8 @@ class Slide(
 object Wallpapers {
     private const val ASSET_DIR = "wallpapers"
     private val PICTURE = Regex(".*\\.(jpe?g|png|webp)$", RegexOption.IGNORE_CASE)
-    const val FROST_W = 480
-    const val FROST_H = 270
+    const val FROST_W = 960
+    const val FROST_H = 540
 
     fun folder(context: Context): File? = context.getExternalFilesDir("wallpapers")
 
@@ -95,7 +95,7 @@ object Wallpapers {
         return out
     }
 
-    /** The glass: a quarter-size copy blurred (three box passes, close to a 7 px Gaussian at this size, as the webOS app's
+    /** The glass: a half-size copy blurred (three box passes, close to a Gaussian, as the webOS app's
      *  `blur(7px)`), with the shade that lies over the screen (Shade in ui/Wallpaper.kt) drawn on top. `strength` (0 to 100)
      *  narrows the blur: less frost lets more of the picture through, none is clear glass. */
     private fun frost(screen: Bitmap, strength: Int): Bitmap {
@@ -109,8 +109,12 @@ object Wallpapers {
         val small = Bitmap.createScaledBitmap(screen, FROST_W, FROST_H, true)
         val px = IntArray(FROST_W * FROST_H)
         small.getPixels(px, 0, FROST_W, 0, 0, FROST_W, FROST_H)
-        val r = max(1, (6 * strength.coerceIn(10, 100) / 100f).roundToInt())
-        repeat(3) { boxBlur(px, FROST_W, FROST_H, r) }
+        // as Simple LG launcher 2.2: a half-size copy (a quarter-size one stretched over the screen already blurred it about as much
+        // as the low steps did, so 10 % looked like 40 %), blurred by up to 14 px at full strength, growing as the square of the
+        // setting (the eye tells small blurs apart and not large ones, so on a straight line 60 % to 100 % looked alike)
+        val k = strength.coerceIn(0, 100) / 100f
+        val r = (14f * k * k * 0.9f).roundToInt()
+        if (r > 0) repeat(3) { boxBlur(px, FROST_W, FROST_H, r) }
         val out = small.copy(Bitmap.Config.ARGB_8888, true)
         if (out !== small) small.recycle()
         out.setPixels(px, 0, FROST_W, 0, 0, FROST_W, FROST_H)

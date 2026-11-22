@@ -152,7 +152,7 @@ private fun Banner(
                 .onSizeChanged { measured(it.width / density, it.height / density) }
                 .softShadow(PLATE_RADIUS, 80f, 30f, Color(0x80000000), shadow)
                 // the glass of a card, lined up with the picture where the banner is now (liquid glass's bevel once it rests)
-                .plate({ Rect(x, y.toInt(), w.toInt(), h.toInt()) }, rest, wall, look, before, glass),
+                .plate({ Rect(x, y.toInt(), w.toInt(), h.toInt()) }, rest, wall, look, before, glass, shadow = shadow, shadowBlur = 80f, shadowDy = 30f, shadowColor = Color(0x80000000)),
         ) {
             Row(Modifier.heightIn(min = 100.dp).widthIn(max = 1600.dp).padding(horizontal = 34.dp, vertical = 24.dp), verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(60.dp).background(n.kind.color, CircleShape), contentAlignment = Alignment.Center) {

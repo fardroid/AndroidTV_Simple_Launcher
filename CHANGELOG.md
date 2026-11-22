@@ -36,6 +36,17 @@ In step with [Simple LG launcher](https://github.com/fardroid/Simple-LG-launcher
   weight moved to Appearance → Widgets (*Clock weight*), and the date's rows joined the clock's group in Widgets.
 - **The picture behind a card in focus stays still** while the card grows.
 - **The weather tries three Open-Meteo hosts** in turn, starting with the one that answered last.
+- **The frost grows evenly.** The glass was a quarter-size copy of the picture, which stretched over the screen already blurred it
+  about as much as 40 %; it is now a half-size copy, blurred by up to 14 px as the square of the setting (as in Simple LG
+  launcher), so 10 % is nearly clear and 60 % and 100 % differ.
+- **The glass lines up with the picture behind it** while the pixel shift has moved the cards (it was a few pixels off, now and
+  then).
+- **The cards' shadow falls under them too**, on the picture behind the glass: a light card no longer sits in a dark frame.
+- **A card in focus** grows with its liquid glass worked out for its grown size, instead of the resting one stretched.
+- **Changing a look setting shows the row where it is**, on a soft halo of Settings' own colour, while the rest of Settings
+  fades and the home screen shows the change (as in Simple LG launcher), instead of a bar at the top.
+- **A new version also shows as a line over the row**, with a green icon; the row moves down to make room for it (as far as the
+  bottom margin allows, then the cards move up).
 
 ## 1.2.0
 

@@ -55,6 +55,14 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -459,6 +467,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
     val peekAnim = remember { Animatable(0f) }
     var peekBar by remember { mutableStateOf<Pair<String, String>?>(null) }
     var peekStamp by remember { mutableStateOf(0) }
+    var rowBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
     fun showsOnHome(item: Item?) = page == null && item != null && (item is Step || item is Toggle) &&
         (section == Section.LOOK && item.label != str(R.string.pixel_shift_oled) || section == Section.WIDGETS && item.label in peekLabels)
     fun peekAt(item: Item, value: String) { if (showsOnHome(item)) { peekBar = item.label to value; peekStamp++ } }
@@ -564,7 +573,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
             BasicText(if (onGallery) str(if (folderIn == null) R.string.choose_where_the_pictures_are_back_returns else R.string.ok_ticks_pictures_for_a_slideshow_or_opens) else if (onGrid && zone == SetZone.CONTENT) str(R.string.ok_shows_or_hides_an_app) else hint, Modifier.padding(top = 10.dp, bottom = 30.dp), style = text(21f, 400, Ui.muted))
             if (onGallery) GalleryGrid(folders, folderIn, if (zone == SetZone.CONTENT) galleryAt else -2, picks, canReadDevice, Modifier.weight(1f))
             else if (onGrid) AppsGrid(gridApps, c.hidden, if (zone == SetZone.CONTENT) appAt else -2, Modifier.weight(1f))
-            else OptionList(items, Modifier.weight(1f), where, if (zone == SetZone.CONTENT) selected else -1, editing, inputFocus) { editing = false; keys.refocus() }
+            else OptionList(items, Modifier.weight(1f), where, if (zone == SetZone.CONTENT) selected else -1, editing, inputFocus, { rowBounds = it }) { editing = false; keys.refocus() }
             val footer = when {
                 zone != SetZone.CONTENT -> ""
                 onGallery -> if (galleryAt == -1) str(R.string.nothing_ticked_all_the_pictures_show) else galleryFooter(folders, folderIn, galleryAt, picks)
@@ -575,23 +584,51 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
             BasicText(footer, Modifier.padding(start = 24.dp, top = 16.dp, bottom = 56.dp).heightIn(min = 64.dp), style = text(22f, 400, Hue.textSecondary, 1.45f), maxLines = 3)
         }
     }
-    // the setting's name and its value in a bar at the top, over the home screen
-    peekBar?.let { (label, value) -> PeekBar(label, value, peekAnim.value) }
+    // a change being shown on the home screen: the row stays where it is, on a soft halo of Settings' own colour, and the rest
+    // of Settings fades (as in the webOS app)
+    if (peekBar != null || peekAnim.value > 0f) rowBounds?.let { b -> items.getOrNull(selected)?.let { PeekRow(it, b, peekAnim.value) } }
     }
 }
 
-/** The name and the new value of a setting that is showing on the home screen. */
+/** The row of a setting that is showing its change on the home screen, kept where it is in Settings (`bounds`, in the screen's
+ *  pixels), on a halo of Settings' own colour (the theme's) that runs on past the right edge of the screen: the numbers of the
+ *  webOS app's (a 48 px margin, fading over 160 px, 88 %, and a glow along the right edge). */
 @Composable
-private fun PeekBar(label: String, value: String, p: Float) {
-    Box(Modifier.fillMaxWidth().padding(top = 56.dp), contentAlignment = Alignment.TopCenter) {
-        Row(
-            Modifier.graphicsLayer { alpha = p; translationY = -(1f - p) * 20f * density }.height(76.dp)
-                .background(Ui.pill, RoundedCornerShape(38.dp)).padding(horizontal = 32.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            BasicText(label, style = text(27f, 500, Ui.onPill), maxLines = 1)
-            Spacer(Modifier.width(36.dp))
-            BasicText(value, style = text(27f, 400, Ui.onPillValue), maxLines = 1)
+private fun PeekRow(item: Item, bounds: androidx.compose.ui.geometry.Rect, p: Float) {
+    val density = LocalDensity.current.density
+    val x = bounds.left / density; val y = bounds.top / density
+    val w = bounds.width / density; val h = bounds.height / density
+    Box(Modifier.fillMaxSize().drawBehind {
+        val shade = Ui.screen.copy(alpha = 0.88f * p)
+        val pad = 48f * density; val fade = 160f * density
+        // the halo: the row's outline grown by the margin, to past the right edge, blurred over the fade
+        drawIntoCanvas { c ->
+            val away = size.width + 6000f
+            val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
+                color = shade.copy(alpha = 1f).toArgb()
+                setShadowLayer(fade * 0.5f, away, 0f, shade.toArgb())
+            }
+            val r = (22f + 48f) * density
+            c.nativeCanvas.drawRoundRect(bounds.left - pad - away, bounds.top - pad, size.width + 400f * density - away, bounds.bottom + pad, r, r, paint)
+        }
+        // the glow along the right edge, spreading up and down from the row
+        drawRect(Brush.radialGradient(listOf(shade, shade.copy(alpha = shade.alpha * 0.55f), Color.Transparent),
+            center = androidx.compose.ui.geometry.Offset(size.width, bounds.center.y), radius = 1330f * density))
+    }) {
+        Box(Modifier.offset(x.dp, y.dp).size(w.dp, h.dp).background(Ui.pill, RoundedCornerShape(22.dp)).padding(horizontal = 24.dp, vertical = 10.dp), contentAlignment = Alignment.CenterStart) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                BasicText(item.label, Modifier.weight(1f), style = text(27f, 400, Ui.onPill), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Spacer(Modifier.width(30.dp))
+                when (item) {
+                    is Toggle -> SwitchMark(item.on, true)
+                    is Step -> Row(verticalAlignment = Alignment.CenterVertically) {
+                        BasicText("‹", Modifier.width(30.dp).graphicsLayer { alpha = 0.85f }, style = text(34f, 400, Ui.onPillValue, 1f).copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center))
+                        BasicText(item.texts.getOrElse(item.index) { "" }, style = text(25f, 400, Ui.onPillValue), maxLines = 1)
+                        BasicText("›", Modifier.width(30.dp).graphicsLayer { alpha = 0.85f }, style = text(34f, 400, Ui.onPillValue, 1f).copy(textAlign = androidx.compose.ui.text.style.TextAlign.Center))
+                    }
+                    else -> {}
+                }
+            }
         }
     }
 }
@@ -626,7 +663,7 @@ private fun NavItem(s: Section, current: Boolean, focused: Boolean) {
 // ---------- the rows, in their groups ----------
 
 @Composable
-private fun OptionList(items: List<Item>, modifier: Modifier, where: String, selected: Int, editing: Boolean, inputFocus: FocusRequester, doneEditing: () -> Unit) {
+private fun OptionList(items: List<Item>, modifier: Modifier, where: String, selected: Int, editing: Boolean, inputFocus: FocusRequester, onFocusedRow: (androidx.compose.ui.geometry.Rect) -> Unit = {}, doneEditing: () -> Unit) {
     // the rows with their headings: a heading before the first row of each named group
     data class Entry(val heading: String?, val index: Int, val first: Boolean, val last: Boolean)
     val entries = buildList {
@@ -657,14 +694,15 @@ private fun OptionList(items: List<Item>, modifier: Modifier, where: String, sel
             } else {
                 val item = items[e.index]
                 val top = if (e.first && n > 0 && entries[n - 1].heading == null) 30.dp else 0.dp
-                RowView(item, e.first, e.last, top, e.index == selected, e.index - 1 == selected && !e.first, editing && e.index == selected, inputFocus, doneEditing)
+                RowView(item, e.first, e.last, top, e.index == selected, e.index - 1 == selected && !e.first, editing && e.index == selected, inputFocus, onFocusedRow, doneEditing)
             }
         }
     }
 }
 
 @Composable
-private fun RowView(item: Item, first: Boolean, last: Boolean, gapAbove: androidx.compose.ui.unit.Dp, on: Boolean, afterFocused: Boolean, editing: Boolean, inputFocus: FocusRequester, doneEditing: () -> Unit) {
+private fun RowView(item: Item, first: Boolean, last: Boolean, gapAbove: androidx.compose.ui.unit.Dp, on: Boolean, afterFocused: Boolean, editing: Boolean, inputFocus: FocusRequester,
+    onFocusedRow: (androidx.compose.ui.geometry.Rect) -> Unit, doneEditing: () -> Unit) {
     val bg by animateColorAsState(if (on) Ui.pill else Color.Transparent, tween(120), label = "pill")
     val labelColor = if (on) Ui.onPill else Hue.textPrimary
     val valueColor = if (on) Ui.onPillValue else Hue.textSecondary
@@ -677,7 +715,10 @@ private fun RowView(item: Item, first: Boolean, last: Boolean, gapAbove: android
         // hairlines between the rows of a group, hidden around the focused one
         if (!first && !on && !afterFocused) Box(Modifier.padding(horizontal = 24.dp).fillMaxWidth().height(1.dp).background(Ui.hairline))
         Row(
-            Modifier.fillMaxWidth().heightIn(min = 76.dp).background(bg, RoundedCornerShape(22.dp)).padding(horizontal = 24.dp, vertical = 10.dp),
+            Modifier.fillMaxWidth().heightIn(min = 76.dp)
+                // where the focused row is on the screen: a change shown on the home screen keeps it there (PeekRow)
+                .then(if (on) Modifier.onGloballyPositioned { onFocusedRow(it.boundsInRoot()) } else Modifier)
+                .background(bg, RoundedCornerShape(22.dp)).padding(horizontal = 24.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             item.icon?.let { Image(androidx.compose.ui.res.painterResource(it), null, Modifier.padding(end = 28.dp).size(40.dp), colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(if (on) Ui.onPillValue else Hue.textSecondary)) }

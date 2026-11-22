@@ -342,7 +342,9 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
     /** For trying the installer (a debuggable build): this release is offered as an update, newer or not. */
     fun offerRelease(tag: String) {
         scope.launch {
-            val u = withContext(Dispatchers.IO) { runCatching { Updates.parse(Net.fetchText(Updates.LATEST.replace("/latest", "/tags/$tag"), 15_000, 400_000)) }.getOrNull() }
+            val u = withContext(Dispatchers.IO) { runCatching { Updates.parse(Net.fetchText(Updates.LATEST.replace("/latest", "/tags/$tag"), 15_000, 400_000)) }
+                .onFailure { android.util.Log.w("SimpleTVUpdate", "test release $tag", it) }.getOrNull() }
+            android.util.Log.i("SimpleTVUpdate", "test release $tag: ${u?.version}")
             if (u != null) { update = u; notices.show(tld.my.simpletv.ui.NoticeKind.UPDATE, str(R.string.update_out, u.version), str(R.string.update_out_text)) }
         }
     }

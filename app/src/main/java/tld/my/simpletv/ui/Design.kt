@@ -87,5 +87,19 @@ fun Modifier.softShadow(radius: Float, blur: Float, dy: Float, color: Color, ena
         }
     }
 
+/** The same shadow alone, without its shape, over what is drawn (clipped to the card by the caller): the part of it that lies
+ *  under the card. The shape is drawn far off to the left and its shadow moved back by as much, so only the shadow lands here. */
+fun androidx.compose.ui.graphics.drawscope.DrawScope.shadowOnly(radius: Float, blur: Float, dy: Float, color: Color) {
+    drawIntoCanvas { c ->
+        val r = radius.dp2px(this)
+        val away = size.width + 4000f
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = color.copy(alpha = 1f).toArgb()
+            setShadowLayer((blur * 0.5f / 0.57735f).dp2px(this@shadowOnly).coerceAtLeast(1f), away, dy.dp2px(this@shadowOnly), color.toArgb())
+        }
+        c.nativeCanvas.drawRoundRect(-away, 0f, size.width - away, size.height, r, r, paint)
+    }
+}
+
 /** Design pixels to real pixels inside a draw scope. */
 fun Float.dp2px(d: Density) = this * d.density

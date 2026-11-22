@@ -98,7 +98,15 @@ class LensCache(private val scope: kotlinx.coroutines.CoroutineScope) {
 
 /** How the cards' glass is drawn: its kind, how much darker the picture is (Dim the picture) and where liquid glass's bevels come
  *  from. */
-class GlassStyle(val kind: tld.my.simpletv.GlassKind, val dim: Float, val lenses: LensCache)
+class GlassStyle(val kind: tld.my.simpletv.GlassKind, val dim: Float, val lenses: LensCache, val focusable: Boolean = false) {
+    fun forFocusable() = GlassStyle(kind, dim, lenses, true)
+}
+
+/** A card grown 2 % round its middle, as in focus. */
+fun grownRect(r: Rect): Rect {
+    val dw = (r.w * 0.02f).roundToInt(); val dh = (r.h * 0.02f).roundToInt()
+    return Rect(r.x - dw / 2, r.y - dh / 2, r.w + dw, r.h + dh)
+}
 
 private val SHADE = Brush.verticalGradient(*Wallpapers.SHADE_STOPS.zip(Wallpapers.SHADE_COLORS.map { Color(it) }).toTypedArray())
 
@@ -139,16 +147,19 @@ fun Plate(
     glass: GlassStyle?,
     shadow: Boolean,
     focused: Boolean = false,
+    /** the pixel shift the cards are drawn with now (design px): the glass takes the picture from where the card really is */
+    shift: Pair<Int, Int> = 0 to 0,
     content: @Composable BoxScope.() -> Unit,
 ) {
     val focus by animateFloatAsState(if (focused) 1f else 0f, tween(130, easing = Ease.out), label = "focus")
+    val onScreen = Rect(rect.x + shift.first, rect.y + shift.second, rect.w, rect.h)
     Box(
         Modifier
             .offset(rect.x.dp, rect.y.dp)
             .size(rect.w.dp, rect.h.dp)
             .graphicsLayer { val s = 1f + 0.02f * focus; scaleX = s; scaleY = s }
             .softShadow(PLATE_RADIUS, 70f, 34f, Color(0x73000000), shadow)
-            .plate({ rect }, rect, wall, look, previousLook, glass, { focus }),
+            .plate({ onScreen }, onScreen, wall, look, previousLook, glass, { focus }, shadow),
         content = content,
     )
 }
@@ -159,7 +170,8 @@ const val PLATE_RADIUS = 36f
  *  `at`: where it is on the screen now (design px), which lines the glass up with the picture behind; `rest`: where it rests, for
  *  which liquid glass's bevel is made (drawn only while it is there); `focus`: 0-1, how far it has grown in focus (the picture
  *  behind is drawn shrunk back by it, so it stays still). */
-fun Modifier.plate(at: () -> Rect, rest: Rect, wall: WallState, look: PlateLook, previousLook: PlateLook?, glass: GlassStyle?, focus: () -> Float = { 0f }): Modifier =
+fun Modifier.plate(at: () -> Rect, rest: Rect, wall: WallState, look: PlateLook, previousLook: PlateLook?, glass: GlassStyle?, focus: () -> Float = { 0f },
+    shadow: Boolean = false, shadowBlur: Float = 70f, shadowDy: Float = 34f, shadowColor: Color = Color(0x73000000)): Modifier =
     drawBehind {
         val r = PLATE_RADIUS * density
         val f = focus()
@@ -175,14 +187,28 @@ fun Modifier.plate(at: () -> Rect, rest: Rect, wall: WallState, look: PlateLook,
                     wall.previous?.let { drawImage(it.frost, dstOffset = origin, dstSize = dst, filterQuality = FilterQuality.Low) }
                     wall.current?.let { drawImage(it.frost, dstOffset = origin, dstSize = dst, alpha = t, filterQuality = FilterQuality.Low) }
                 }
-                // liquid glass: the bent picture on the bevel, over it (it grows with the card, as the bevel does)
+                // liquid glass: the bent picture on the bevel, over it. A card in focus is 2 % larger: its bevel is worked out for that
+                // size and place too (as the webOS launcher's shader does every frame), and the two cross-fade as it grows, instead
+                // of the resting one being stretched
                 if (glass.kind == tld.my.simpletv.GlassKind.LIQUID && now == rest) {
                     val full = IntSize(size.width.roundToInt(), size.height.roundToInt())
-                    wall.previous?.let { s -> glass.lenses.bevel(s, rest)?.let { drawImage(it, dstSize = full, filterQuality = FilterQuality.Low) } }
-                    wall.current?.let { s -> glass.lenses.bevel(s, rest)?.let { drawImage(it, dstSize = full, alpha = t, filterQuality = FilterQuality.Low) } }
+                    val big = grownRect(rest)
+                    fun bevelOf(s: Slide, alpha: Float) {
+                        val small = glass.lenses.bevel(s, rest)
+                        val large = if (f > 0f || glass.focusable) glass.lenses.bevel(s, big) else null
+                        if (f > 0f && large != null) {
+                            small?.let { drawImage(it, dstSize = full, alpha = alpha * (1f - f), filterQuality = FilterQuality.Low) }
+                            drawImage(large, dstSize = full, alpha = alpha * (if (small == null) 1f else f), filterQuality = FilterQuality.Low)
+                        } else small?.let { drawImage(it, dstSize = full, alpha = alpha, filterQuality = FilterQuality.Low) }
+                    }
+                    wall.previous?.let { bevelOf(it, 1f) }
+                    wall.current?.let { bevelOf(it, t) }
                 }
                 if (glass.dim > 0f) drawRect(Color.Black, alpha = glass.dim)
             }
+            // the card's shadow falls on the picture behind it, which shows through the glass: under the card too, not only
+            // round it (a light card in a dark frame looked lit from inside)
+            if (shadow) shadowOnly(PLATE_RADIUS, shadowBlur, shadowDy, shadowColor)
             val bg = if (previousLook == null) Color(look.bg) else lerp(Color(previousLook.bg), Color(look.bg), t)
             drawRect(bg)
             if (f > 0f) drawRect(Color(look.focus), alpha = f)
