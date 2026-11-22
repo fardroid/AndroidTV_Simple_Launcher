@@ -143,7 +143,7 @@
     <string name="text_size">Textgröße</string>
     <string name="all_the_text_on_the_weather">Der gesamte Text auf den Wetter- und Kalenderkarten.</string>
     <string name="card_colour">Widget-Hintergrund</string>
-    <string name="auto_all_the_cards_turn_light">Auto: Alle Karten werden gemeinsam hell oder dunkel, je nach Bild dahinter, damit der Text auf jeder lesbar bleibt.</string>
+    <string name="auto_all_the_cards_turn_light">Hell oder dunkel, im Farbton des Farbschemas; neutral: ohne Farbe, nur das Glas. Auto: Alle Widgets werden je nach Bild dahinter gemeinsam hell oder dunkel, damit der Text auf jedem gut lesbar bleibt.</string>
     <string name="frosted_glass">Milchglas</string>
     <string name="the_cards_blur_the_picture_behind">Die Karten verwischen das Bild hinter ihnen.</string>
     <string name="frost">Mattheit</string>
@@ -352,4 +352,5 @@
     <string name="collection_space">Weltraum</string>
     <string name="collection_abstract">Abstrakt</string>
     <string name="wallpaper_downloads">Die Hintergrundbilder werden im Hintergrund geladen: %1$s</string>
+    <string name="plates_neutral">Neutral</string>
 </resources>

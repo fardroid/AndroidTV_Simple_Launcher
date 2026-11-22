@@ -8,8 +8,8 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 enum class PlateMode {
-    AUTO, LIGHT, DARK;
-    val label get() = when (this) { AUTO -> str(R.string.auto); LIGHT -> str(R.string.plates_light); DARK -> str(R.string.dark) }
+    AUTO, LIGHT, DARK, NEUTRAL;
+    val label get() = when (this) { AUTO -> str(R.string.auto); LIGHT -> str(R.string.plates_light); DARK -> str(R.string.dark); NEUTRAL -> str(R.string.plates_neutral) }
 }
 
 enum class GlassKind {

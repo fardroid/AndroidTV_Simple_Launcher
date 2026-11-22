@@ -143,7 +143,7 @@
     <string name="text_size">Размер текста</string>
     <string name="all_the_text_on_the_weather">Весь текст на карточках погоды и календаря.</string>
     <string name="card_colour">Подложка виджетов</string>
-    <string name="auto_all_the_cards_turn_light">Авто: все карточки вместе становятся светлыми или тёмными в зависимости от картинки за ними, чтобы текст хорошо читался на каждой.</string>
+    <string name="auto_all_the_cards_turn_light">Светлая или тёмная, в оттенке цветовой темы; нейтральная: без цвета, только стекло. Авто: все виджеты вместе становятся светлыми или тёмными в зависимости от картинки за ними, чтобы текст хорошо читался на каждом.</string>
     <string name="frosted_glass">Матовое стекло</string>
     <string name="the_cards_blur_the_picture_behind">Карточки размывают картинку под собой.</string>
     <string name="frost">Матовость</string>
@@ -366,4 +366,5 @@
     <string name="collection_space">Космос</string>
     <string name="collection_abstract">Абстракции</string>
     <string name="wallpaper_downloads">Обои скачиваются в фоне: %1$s</string>
+    <string name="plates_neutral">Нейтральная</string>
 </resources>

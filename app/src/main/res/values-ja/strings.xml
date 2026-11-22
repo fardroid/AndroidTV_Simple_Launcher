@@ -143,7 +143,7 @@
     <string name="text_size">文字サイズ</string>
     <string name="all_the_text_on_the_weather">天気とカレンダーのカードのすべての文字。</string>
     <string name="card_colour">ウィジェットの背景</string>
-    <string name="auto_all_the_cards_turn_light">自動：背後の画像に応じてすべてのカードがそろって明るく、または暗くなり、どのカードでも文字が読みやすくなります。</string>
+    <string name="auto_all_the_cards_turn_light">カラーテーマの色合いで明るくまたは暗く。ニュートラルは色なしでガラスのみ。自動では、背後の画像に合わせてすべてのウィジェットが一緒に明るくまたは暗くなり、どれでも文字が読みやすくなります。</string>
     <string name="frosted_glass">すりガラス</string>
     <string name="the_cards_blur_the_picture_behind">カードが背後の画像をぼかします。</string>
     <string name="frost">すりガラスの強さ</string>
@@ -345,4 +345,5 @@
     <string name="collection_space">宇宙</string>
     <string name="collection_abstract">抽象</string>
     <string name="wallpaper_downloads">壁紙をバックグラウンドでダウンロード中: %1$s</string>
+    <string name="plates_neutral">ニュートラル</string>
 </resources>

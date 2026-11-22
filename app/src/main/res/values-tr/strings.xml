@@ -143,7 +143,7 @@
     <string name="text_size">Metin boyutu</string>
     <string name="all_the_text_on_the_weather">Hava durumu ve takvim kartlarındaki tüm metin.</string>
     <string name="card_colour">Widget arka planı</string>
-    <string name="auto_all_the_cards_turn_light">Otomatik: tüm kartlar, arkalarındaki resme göre birlikte açık veya koyu olur; böylece metin her birinde okunaklı kalır.</string>
+    <string name="auto_all_the_cards_turn_light">Renk temasının tonunda açık ya da koyu; nötr: renksiz, yalnızca cam. Otomatik: arkadaki resme göre tüm widget\'lar birlikte açık ya da koyu olur, böylece yazı her birinde okunur kalır.</string>
     <string name="frosted_glass">Buzlu cam</string>
     <string name="the_cards_blur_the_picture_behind">Kartlar arkalarındaki resmi bulanıklaştırır.</string>
     <string name="frost">Buzlu cam</string>
@@ -352,4 +352,5 @@
     <string name="collection_space">Uzay</string>
     <string name="collection_abstract">Soyut</string>
     <string name="wallpaper_downloads">Duvar kâğıtları arka planda indiriliyor: %1$s</string>
+    <string name="plates_neutral">Nötr</string>
 </resources>

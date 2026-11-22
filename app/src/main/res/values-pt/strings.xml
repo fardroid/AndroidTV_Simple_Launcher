@@ -143,7 +143,7 @@
     <string name="text_size">Tamanho do texto</string>
     <string name="all_the_text_on_the_weather">Todo o texto nos cartões de clima e calendário.</string>
     <string name="card_colour">Fundo dos widgets</string>
-    <string name="auto_all_the_cards_turn_light">Auto: todos os cartões ficam claros ou escuros juntos, conforme a imagem atrás deles, para que o texto continue legível em cada um.</string>
+    <string name="auto_all_the_cards_turn_light">Claro ou escuro, no tom do tema de cores; neutro: sem cor, só o vidro. Auto: todos os widgets ficam claros ou escuros juntos conforme a imagem por trás, para que o texto se leia bem em cada um.</string>
     <string name="frosted_glass">Vidro fosco</string>
     <string name="the_cards_blur_the_picture_behind">Os cartões desfocam a imagem atrás deles.</string>
     <string name="frost">Fosco</string>
@@ -357,4 +357,5 @@
     <string name="collection_space">Espaço</string>
     <string name="collection_abstract">Abstrato</string>
     <string name="wallpaper_downloads">Os fundos são transferidos em segundo plano: %1$s</string>
+    <string name="plates_neutral">Neutro</string>
 </resources>

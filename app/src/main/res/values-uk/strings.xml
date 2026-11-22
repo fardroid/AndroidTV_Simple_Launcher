@@ -143,7 +143,7 @@
     <string name="text_size">Розмір тексту</string>
     <string name="all_the_text_on_the_weather">Увесь текст на картках погоди та календаря.</string>
     <string name="card_colour">Підкладка віджетів</string>
-    <string name="auto_all_the_cards_turn_light">Авто: усі картки разом стають світлими або темними залежно від зображення за ними, щоб текст добре читався на кожній.</string>
+    <string name="auto_all_the_cards_turn_light">Світла або темна, у відтінку колірної теми; нейтральна: без кольору, лише скло. Авто: усі віджети разом стають світлими або темними залежно від картинки за ними, щоб текст добре читався на кожному.</string>
     <string name="frosted_glass">Матове скло</string>
     <string name="the_cards_blur_the_picture_behind">Картки розмивають зображення під собою.</string>
     <string name="frost">Матовість</string>
@@ -366,4 +366,5 @@
     <string name="collection_space">Космос</string>
     <string name="collection_abstract">Абстракції</string>
     <string name="wallpaper_downloads">Шпалери завантажуються у фоні: %1$s</string>
+    <string name="plates_neutral">Нейтральна</string>
 </resources>

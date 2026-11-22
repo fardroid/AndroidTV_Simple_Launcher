@@ -143,7 +143,7 @@
     <string name="text_size">Dimensione del testo</string>
     <string name="all_the_text_on_the_weather">Tutto il testo sulle schede del meteo e del calendario.</string>
     <string name="card_colour">Sfondo dei widget</string>
-    <string name="auto_all_the_cards_turn_light">Auto: tutte le schede diventano chiare o scure insieme, in base all\'immagine dietro di esse, così il testo resta leggibile su ciascuna.</string>
+    <string name="auto_all_the_cards_turn_light">Chiaro o scuro, nella tonalità del tema colore; neutro: senza colore, solo il vetro. Auto: tutti i widget diventano chiari o scuri insieme in base all\'immagine dietro, così il testo resta leggibile su ciascuno.</string>
     <string name="frosted_glass">Vetro smerigliato</string>
     <string name="the_cards_blur_the_picture_behind">Le schede sfocano l\'immagine dietro di esse.</string>
     <string name="frost">Satinatura</string>
@@ -357,4 +357,5 @@
     <string name="collection_space">Spazio</string>
     <string name="collection_abstract">Astratto</string>
     <string name="wallpaper_downloads">Gli sfondi si scaricano in background: %1$s</string>
+    <string name="plates_neutral">Neutro</string>
 </resources>
