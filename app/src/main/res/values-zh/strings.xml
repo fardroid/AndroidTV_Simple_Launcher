@@ -142,12 +142,12 @@
     <string name="cards">卡片</string>
     <string name="text_size">文字大小</string>
     <string name="all_the_text_on_the_weather">天气和日历卡片上的所有文字。</string>
-    <string name="card_colour">卡片颜色</string>
+    <string name="card_colour">小部件背景</string>
     <string name="auto_all_the_cards_turn_light">自动：所有卡片会根据身后的图片一起变浅或变深，使每张卡片上的文字都清晰易读。</string>
     <string name="frosted_glass">磨砂玻璃</string>
     <string name="the_cards_blur_the_picture_behind">卡片会模糊其身后的图片。</string>
     <string name="frost">磨砂程度</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">玻璃对其后图片的模糊程度：100% 最强，30% 时图片更清晰。</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">玻璃对其后图片的模糊程度：100% 最强；关闭后玻璃透明，液态玻璃只折射图片。</string>
     <string name="shadows">阴影</string>
     <string name="a_soft_shadow_under_the_clock">时钟和卡片下方的柔和阴影。关闭后设备的绘制负担略小。</string>
     <string name="pixel_shift_oled">像素位移（OLED）</string>
@@ -314,4 +314,20 @@
     <string name="theme_lavender">薰衣草</string>
     <string name="theme_graphite">石墨</string>
     <string name="colour_theme_description">没有图片时的背景，文字、卡片、应用磁贴以及这些屏幕的颜色。OLED 黑色让不用的像素保持熄灭。</string>
+    <string name="glass">玻璃</string>
+    <string name="glass_frosted">磨砂</string>
+    <string name="glass_liquid">液态</string>
+    <string name="glass_description">磨砂：小部件会模糊背后的图片。液态：还会像厚玻璃一样在边缘折射图片。</string>
+    <string name="clock_weight">时钟数字粗细</string>
+    <string name="off">关</string>
+    <string name="at_night">夜间</string>
+    <string name="always">始终</string>
+    <string name="dim_the_picture">调暗图片</string>
+    <string name="dim_description">调暗壁纸：眼睛更舒适，文字更清晰。夜间：天气所选城市的日落到日出（黄昏时逐渐变暗）；未选择城市时为 19:00 至 7:00。</string>
+    <string name="dimming">调暗程度</string>
+    <string name="how_much_darker">图片变暗的程度。</string>
+    <string name="brightness">亮度</string>
+    <string name="screen_saver">屏幕保护</string>
+    <string name="after_n">%1$s后</string>
+    <string name="screen_saver_description">在这段时间内不按任何键，屏幕上只留下壁纸。按任意键即可恢复。</string>
 </resources>

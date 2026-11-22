@@ -80,7 +80,8 @@ import tld.my.simpletv.Apps
 import tld.my.simpletv.BuildConfigInfo
 import tld.my.simpletv.Cal
 import tld.my.simpletv.City
-import tld.my.simpletv.ClockColors
+import tld.my.simpletv.DimMode
+import tld.my.simpletv.GlassKind
 import tld.my.simpletv.Config
 import tld.my.simpletv.Feeds
 import tld.my.simpletv.Gallery
@@ -198,8 +199,8 @@ private fun resetLook(c: Config): Config {
     val d = Config()
     return c.copy(
         iconScale = d.iconScale, showLabels = d.showLabels, labelsSelectedOnly = d.labelsSelectedOnly, tileShape = d.tileShape, sideMargin = d.sideMargin, bottomMargin = d.bottomMargin,
-        cardSize = d.cardSize, plates = d.plates, glass = d.glass, frost = d.frost, shadows = d.shadows,
-        clock24 = d.clock24, clockSize = d.clockSize, clockFont = d.clockFont, clockWeight = d.clockWeight, clockColor = d.clockColor,
+        cardSize = d.cardSize, plates = d.plates, glass = d.glass, glassKind = d.glassKind, frost = d.frost, shadows = d.shadows,
+        clock24 = d.clock24, clockSize = d.clockSize, clockFont = d.clockFont, clockWeight = d.clockWeight,
         showDate = d.showDate, dateSize = d.dateSize,
     )
 }
@@ -347,10 +348,15 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                 add(range(str(R.string.bottom_margin), str(R.string.space_below_the_row), row, c.bottomMargin, 0, 200, 10, " px") { v -> set { it.copy(bottomMargin = v) } })
                 val cards = str(R.string.widgets)
                 add(choice(str(R.string.font), str(R.string.for_the_clock_the_date_the), cards, Fonts.ALL.map { it.id to it.label }, c.clockFont) { v -> set { it.copy(clockFont = v) } })
+                add(choice(str(R.string.clock_weight), str(R.string.from_thin_to_bold_digits), cards, Fonts.WEIGHTS.map { it to weightText(it) }, c.clockWeight) { v -> set { it.copy(clockWeight = v) } })
                 add(range(str(R.string.text_size), str(R.string.all_the_text_on_the_weather), cards, c.cardSize, 60, 160, 5, "%") { v -> set { it.copy(cardSize = v) } })
                 add(choice(str(R.string.card_colour), str(R.string.auto_all_the_cards_turn_light), cards, PlateMode.entries.map { it to it.label }, c.plates) { v -> set { it.copy(plates = v) } })
-                if (c.wallpaperOn) add(Toggle(str(R.string.frosted_glass), str(R.string.the_cards_blur_the_picture_behind), cards, c.glass) { v -> set { it.copy(glass = v) } })
-                if (c.wallpaperOn && c.glass) add(range(str(R.string.frost), str(R.string.how_much_the_glass_blurs_the), cards, c.frost, 30, 100, 10, "%") { v -> set { it.copy(frost = v) } })
+                // Glass: off, frosted or liquid (the switch of Frosted glass before); the frost goes for both kinds
+                if (c.wallpaperOn) add(choice(str(R.string.glass), str(R.string.glass_description), cards,
+                    listOf<Pair<GlassKind?, String>>(null to str(R.string.off)) + GlassKind.entries.map { it to it.label }, if (c.glass) c.glassKind else null) { v ->
+                    set { if (v == null) it.copy(glass = false) else it.copy(glass = true, glassKind = v) } })
+                if (c.wallpaperOn && c.glass) add(choice(str(R.string.frost), str(R.string.how_much_the_glass_blurs_the), cards,
+                    (0..100 step 10).map { it to if (it == 0) str(R.string.off) else "$it%" }, c.frost / 10 * 10) { v -> set { it.copy(frost = v) } })
                 add(Toggle(str(R.string.shadows), str(R.string.a_soft_shadow_under_the_clock), cards, c.shadows) { v -> set { it.copy(shadows = v) } })
                 add(Toggle(str(R.string.pixel_shift_oled), str(R.string.the_clock_the_cards_and_the), cards, c.pixelShift) { v -> set { it.copy(pixelShift = v) } })
             }
@@ -358,11 +364,9 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                 val clock = str(R.string.clock)
                 add(choice(str(R.string.format), str(R.string.n12_hour_or_24_hour), clock, listOf(true to str(R.string.n24_hour), false to str(R.string.n12_hour_am_pm)), c.clock24) { v -> set { it.copy(clock24 = v) } })
                 add(range(str(R.string.size), str(R.string.the_height_of_the_digits), clock, c.clockSize, 80, 220, 10, " px") { v -> set { it.copy(clockSize = v) } })
-                add(choice(str(R.string.weight), str(R.string.from_thin_to_bold_digits), clock, Fonts.WEIGHTS.map { it to weightText(it) }, c.clockWeight) { v -> set { it.copy(clockWeight = v) } })
-                add(choice(str(R.string.colour), str(R.string.white_is_hard_to_read_on), clock, ClockColors.ALL.map { it.id to it.label }, c.clockColor) { v -> set { it.copy(clockColor = v) } })
-                val date = str(R.string.date)
-                add(Toggle(str(R.string.show_the_date), str(R.string.the_weekday_and_the_date_beside), date, c.showDate) { v -> set { it.copy(showDate = v) } })
-                if (c.showDate) add(range(str(R.string.date_size), str(R.string.the_size_of_the_weekday_and), date, c.dateSize, 60, 160, 5, "%") { v -> set { it.copy(dateSize = v) } })
+                // the date in the clock's group, the weight with the font in Appearance (Simple LG launcher 2.2.5)
+                add(Toggle(str(R.string.show_the_date), str(R.string.the_weekday_and_the_date_beside), clock, c.showDate) { v -> set { it.copy(showDate = v) } })
+                if (c.showDate) add(range(str(R.string.date_size), str(R.string.the_size_of_the_weekday_and), clock, c.dateSize, 60, 160, 5, "%") { v -> set { it.copy(dateSize = v) } })
                 val weather = str(R.string.weather)
                 add(Toggle(str(R.string.show_the_weather), str(R.string.the_temperature_and_the_forecast), weather, c.weatherOn) { v -> set { it.copy(weatherOn = v) } })
                 add(Action(str(R.string.city), str(R.string.pick_a_city_from_the_list), weather, c.city?.name ?: str(R.string.not_chosen), opens = true) { open(Page.CityPage) })
@@ -389,6 +393,13 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
                     add(choice(str(R.string.change_every), str(R.string.how_long_each_picture_stays_on), show, Config.INTERVALS.map { it to interval(it) }, c.intervalSec) { v -> set { it.copy(intervalSec = v) } })
                     add(Toggle(str(R.string.shuffle), str(R.string.random_order_off_in_turn), show, c.shuffle) { v -> set { it.copy(shuffle = v) } })
                 }
+                if (c.wallpaperOn) {
+                    val brightness = str(R.string.brightness)
+                    add(choice(str(R.string.dim_the_picture), str(R.string.dim_description), brightness, DimMode.entries.map { it to it.label }, c.dim) { v -> set { it.copy(dim = v) } })
+                    if (c.dim != DimMode.OFF) add(range(str(R.string.dimming), str(R.string.how_much_darker), brightness, c.dimStrength, 10, 70, 10, "%") { v -> set { it.copy(dimStrength = v) } })
+                }
+                add(choice(str(R.string.screen_saver), str(R.string.screen_saver_description), str(R.string.screen_saver),
+                    Config.SAVER_MINUTES.map { it to if (it == 0) str(R.string.off) else str(R.string.after_n, interval(it * 60)) }, c.saverMinutes) { v -> set { it.copy(saverMinutes = v) } })
                 val folder = (Wallpapers.folder(context)?.absolutePath ?: "/sdcard/Android/data/tld.my.simpletv/files/wallpapers") + "/"
                 add(Info(str(R.string.picture_folder), str(R.string.add_your_own_pictures_from_a, folder), str(R.string.your_own_pictures), "adb push"))
             }
@@ -428,7 +439,7 @@ fun SettingsPanel(state: LauncherState, keys: KeyTarget) {
     if (items.isNotEmpty() && selected !in items.indices) selected = items.lastIndex
 
     // the rows whose change shows on the home screen: Settings steps aside for a moment (as in the webOS app)
-    val peekLabels = remember(Lang.current) { setOf(str(R.string.format), str(R.string.size), str(R.string.weight), str(R.string.colour), str(R.string.show_the_date), str(R.string.date_size), str(R.string.temperature_unit)) }
+    val peekLabels = remember(Lang.current) { setOf(str(R.string.format), str(R.string.size), str(R.string.show_the_date), str(R.string.date_size), str(R.string.temperature_unit)) }
     val peekAnim = remember { Animatable(0f) }
     var peekBar by remember { mutableStateOf<Pair<String, String>?>(null) }
     var peekStamp by remember { mutableStateOf(0) }

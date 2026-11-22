@@ -142,12 +142,12 @@
     <string name="cards">Cartes</string>
     <string name="text_size">Taille du texte</string>
     <string name="all_the_text_on_the_weather">Tout le texte des cartes météo et calendrier.</string>
-    <string name="card_colour">Couleur des cartes</string>
+    <string name="card_colour">Fond des widgets</string>
     <string name="auto_all_the_cards_turn_light">Auto : toutes les cartes deviennent claires ou sombres ensemble, selon l’image derrière elles, pour que le texte reste lisible sur chacune.</string>
     <string name="frosted_glass">Verre dépoli</string>
     <string name="the_cards_blur_the_picture_behind">Les cartes floutent l’image derrière elles.</string>
     <string name="frost">Dépoli</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">À quel point le verre floute l\'image derrière lui : 100 % au maximum, à 30 % l\'image est plus nette.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">À quel point le verre floute l\'image derrière lui : 100 % au maximum ; désactivé, il reste clair et le verre liquide ne fait que la réfracter.</string>
     <string name="shadows">Ombres</string>
     <string name="a_soft_shadow_under_the_clock">Une ombre douce sous l’horloge et les cartes. Sans elle, le boîtier a un peu moins à dessiner.</string>
     <string name="pixel_shift_oled">Décalage des pixels (OLED)</string>
@@ -326,4 +326,20 @@
     <string name="theme_lavender">Lavande</string>
     <string name="theme_graphite">Graphite</string>
     <string name="colour_theme_description">Le fond sans image, les couleurs du texte, des cartes et des vignettes d\'applis, et de ces écrans. Le noir OLED laisse éteints les pixels inutiles.</string>
+    <string name="glass">Verre</string>
+    <string name="glass_frosted">Dépoli</string>
+    <string name="glass_liquid">Liquide</string>
+    <string name="glass_description">Dépoli : les widgets floutent l\'image derrière eux. Liquide : ils la courbent aussi sur leurs bords, comme un verre épais.</string>
+    <string name="clock_weight">Épaisseur des chiffres</string>
+    <string name="off">Désactivé</string>
+    <string name="at_night">La nuit</string>
+    <string name="always">Toujours</string>
+    <string name="dim_the_picture">Assombrir l\'image</string>
+    <string name="dim_description">Assombrit le fond d\'écran : c\'est plus reposant pour les yeux et le texte ressort mieux. La nuit : du coucher au lever du soleil dans la ville de la météo (il s\'assombrit peu à peu pendant le crépuscule) ; sans ville choisie, de 19 h à 7 h.</string>
+    <string name="dimming">Assombrissement</string>
+    <string name="how_much_darker">De combien l\'image s\'assombrit.</string>
+    <string name="brightness">Luminosité</string>
+    <string name="screen_saver">Économiseur d\'écran</string>
+    <string name="after_n">Après %1$s</string>
+    <string name="screen_saver_description">Après ce délai sans appui, seul le fond d\'écran reste à l\'écran. N\'importe quelle touche ramène tout.</string>
 </resources>

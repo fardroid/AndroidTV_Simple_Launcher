@@ -113,11 +113,44 @@ class LogicTest {
         val dark = FloatArray(16 * 9) { 0.1f }
         val light = FloatArray(16 * 9) { 0.9f }
         val board = Plates.boardLayout(Plates.Cards(true, true, false, false, Plates.ClockShape(160, true, 100, false)), 74)
-        assertEquals(0x1CFFFFFFL, Plates.looks(PlateMode.AUTO, dark, board).bg)
-        assertTrue((Plates.looks(PlateMode.AUTO, light, board).bg ushr 24) > 0x9A)
+        // light: the theme's middle colour half way to white, 16 %; dark: the theme's plate at 55 %, nothing in between
+        assertEquals(Plates.light(), Plates.looks(PlateMode.AUTO, dark, board))
+        assertEquals(0x29939ABDL, Plates.looks(PlateMode.AUTO, dark, board).bg)
+        assertEquals(Plates.dark(), Plates.looks(PlateMode.AUTO, light, board))
+        assertEquals(Plates.dark(), Plates.looks(PlateMode.AUTO, FloatArray(16 * 9) { 0.4f }, board))
         // one bright spot behind any plate makes all of them dark, the same colour
         val half = FloatArray(Plates.MAP_W * Plates.MAP_H) { i -> if (i % Plates.MAP_W < Plates.MAP_W / 2) 1f else 0f }
-        assertTrue((Plates.looks(PlateMode.AUTO, half, board).bg ushr 24) > 0x9A)
+        assertEquals(Plates.dark(), Plates.looks(PlateMode.AUTO, half, board))
+    }
+
+    @Test fun liquidGlassBendsOnlyTheBevel() {
+        // no shift at the very rim (the glass has no height there) nor on the flat top; inwards, and more for blue, in between
+        assertEquals(0.0, Lens.shift(0.0, 35.0), 1e-9)
+        assertEquals(0.0, Lens.shift(1.0, 35.0), 1e-9)
+        val mid = Lens.shift(0.3, 35.0)
+        assertTrue(mid > 1.0)
+        assertTrue(Lens.shift(0.3, 35.0, ior = 3.18) > mid)
+        // the rounded box: 0 on its outline, negative inside
+        assertEquals(0f, Lens.box(100f, 0f, 100f, 50f, 36f), 1e-4f)
+        assertTrue(Lens.box(0f, 0f, 100f, 50f, 36f) < 0f)
+    }
+
+    @Test fun dimmingFollowsTheSun() {
+        val rome = City("Rome", 41.9, 12.5, "")
+        val c = Config(dim = DimMode.NIGHT, dimStrength = 40, city = rome)
+        // 2026-06-21 12:00 and 23:00 in Rome (UTC+2)
+        assertEquals(0f, Sun.dim(c, 1781949600000L), 1e-6f)
+        assertEquals(0.4f, Sun.dim(c, 1781989200000L), 1e-6f)
+        assertEquals(0.4f, Sun.dim(c.copy(dim = DimMode.ALWAYS), 1781949600000L), 1e-6f)
+        assertEquals(0f, Sun.dim(c.copy(wallpaperOn = false, dim = DimMode.ALWAYS), 0L), 1e-6f)
+    }
+
+    @Test fun newSettingsSurviveTheirText() {
+        val c = Config(glassKind = GlassKind.LIQUID, frost = 0, dim = DimMode.NIGHT, dimStrength = 30, saverMinutes = 15)
+        assertEquals(c, Config.fromJson(c.toJson()))
+        // an old frost under 30 and an unknown saver time
+        assertEquals(5, Config.fromJson("""{"saverMinutes":7}""").saverMinutes)
+        assertEquals(GlassKind.FROST, Config.fromJson("""{"glass":true}""").glassKind)
     }
 
     @Test fun settingsSurviveTheirText() {

@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import tld.my.simpletv.GlassKind
+import tld.my.simpletv.Sun
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -280,9 +282,13 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
         }
     }
 
-    val look = Plates.looks(c.plates, if (c.wallpaperOn) state.wall.current?.map else null, board, Themes.current.plate)
-    val before = state.wall.previous?.let { Plates.looks(c.plates, it.map, board, Themes.current.plate) }
-    val glass = c.glass && c.wallpaperOn
+    // Dim the picture: the wallpaper and the glass that much darker, and the plates chosen for the picture as dimmed
+    val dim = Sun.dim(c, nowMs)
+    fun seen(map: FloatArray) = if (dim <= 0f) map else FloatArray(map.size) { map[it] * (1 - dim) }
+    val look = Plates.looks(c.plates, if (c.wallpaperOn) state.wall.current?.map?.let(::seen) else null, board, Themes.current.plate, Themes.current.mid)
+    val before = state.wall.previous?.let { Plates.looks(c.plates, seen(it.map), board, Themes.current.plate, Themes.current.mid) }
+    val glass = if (c.glass && c.wallpaperOn) GlassStyle(c.glassKind, dim, state.lenses) else null
+    if (glass?.kind == GlassKind.LIQUID) SideEffect { state.lenses.keep(listOf(state.wall.current, state.wall.previous)) }
 
     // the news turn their pages by themselves every 20 s while the remote is elsewhere
     LaunchedEffect(newsOn, zone == Zone.NEWS, detail == null, newsPageCount, newsPage) {
@@ -300,7 +306,7 @@ fun HomeScreen(state: LauncherState, keys: KeyTarget, active: Boolean) {
     }
 
     Box(Modifier.fillMaxSize()) {
-        Background(state.wall, c.wallpaperOn)
+        Background(state.wall, c.wallpaperOn, dim)
         // under Settings only the wallpaper shows (as in the webOS app), the rest only while Settings peeks aside to show a change; the rest stays put, ready for when Settings closes
         // pixel shift moves the cards and the row a few pixels once a minute (Plates.shiftAt); the wallpaper stays
         val shift = if (c.pixelShift) Plates.shiftAt(nowMs) else 0 to 0

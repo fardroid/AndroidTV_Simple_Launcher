@@ -142,12 +142,12 @@
     <string name="cards">Картки</string>
     <string name="text_size">Розмір тексту</string>
     <string name="all_the_text_on_the_weather">Увесь текст на картках погоди та календаря.</string>
-    <string name="card_colour">Колір карток</string>
+    <string name="card_colour">Підкладка віджетів</string>
     <string name="auto_all_the_cards_turn_light">Авто: усі картки разом стають світлими або темними залежно від зображення за ними, щоб текст добре читався на кожній.</string>
     <string name="frosted_glass">Матове скло</string>
     <string name="the_cards_blur_the_picture_behind">Картки розмивають зображення під собою.</string>
     <string name="frost">Матовість</string>
-    <string name="how_much_the_glass_blurs_the" formatted="false">Наскільки скло розмиває картинку під собою: 100% — найсильніше, на 30% картинку видно чіткіше.</string>
+    <string name="how_much_the_glass_blurs_the" formatted="false">Наскільки скло розмиває картинку під собою: 100% — найсильніше; якщо вимкнути, скло прозоре, і рідке скло лише заломлює картинку.</string>
     <string name="shadows">Тіні</string>
     <string name="a_soft_shadow_under_the_clock">М’яка тінь під годинником і картками. Без неї приставка малює екран трохи легше.</string>
     <string name="pixel_shift_oled">Зсув пікселів (OLED)</string>
@@ -335,4 +335,20 @@
     <string name="theme_lavender">Лаванда</string>
     <string name="theme_graphite">Графіт</string>
     <string name="colour_theme_description">Тло без картинки, кольори тексту, карток, плиток застосунків і цих екранів. Чорна тема не вмикає зайві пікселі OLED.</string>
+    <string name="glass">Скло</string>
+    <string name="glass_frosted">Матове</string>
+    <string name="glass_liquid">Рідке</string>
+    <string name="glass_description">Матове: віджети розмивають картинку під собою. Рідке: ще й заломлюють її біля країв, як товсте скло.</string>
+    <string name="clock_weight">Товщина цифр годинника</string>
+    <string name="off">Вимк.</string>
+    <string name="at_night">Уночі</string>
+    <string name="always">Завжди</string>
+    <string name="dim_the_picture">Затемнювати картинку</string>
+    <string name="dim_description">Робить шпалери темнішими: очам спокійніше, текст помітніший. Уночі: від заходу до сходу сонця в місті погоди (темнішає поступово, поки тривають сутінки); якщо місто не вибрано, з 19:00 до 7:00.</string>
+    <string name="dimming">Затемнення</string>
+    <string name="how_much_darker">Наскільки темнішою стає картинка.</string>
+    <string name="brightness">Яскравість</string>
+    <string name="screen_saver">Заставка</string>
+    <string name="after_n">Через %1$s</string>
+    <string name="screen_saver_description">Після цього часу без натискань на екрані лишаються самі шпалери. Будь-яка кнопка повертає все.</string>
 </resources>

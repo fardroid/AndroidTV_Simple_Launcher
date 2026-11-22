@@ -30,6 +30,10 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import kotlinx.coroutines.launch
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.IntOffset
@@ -64,6 +68,38 @@ class WallState {
     }
 }
 
+/** The bevels of liquid glass (Lens.bevel), made in the background once for each picture and card and kept while that picture
+ *  is on the screen or fading out. Reading one that is not made yet starts making it; the card redraws when it is there. */
+class LensCache(private val scope: kotlinx.coroutines.CoroutineScope) {
+    private val made = androidx.compose.runtime.mutableStateMapOf<String, ImageBitmap>()
+    private val making = mutableSetOf<String>()
+
+    private fun key(slide: Slide, rect: Rect) = "${slide.id}#${System.identityHashCode(slide.frost)}#${rect.x},${rect.y},${rect.w},${rect.h}"
+
+    fun bevel(slide: Slide, rect: Rect): ImageBitmap? {
+        val k = key(slide, rect)
+        made[k]?.let { return it }
+        if (making.add(k)) scope.launch(kotlinx.coroutines.Dispatchers.Default) {
+            val bmp = runCatching { tld.my.simpletv.Lens.bevel(slide.frost.asAndroidBitmap(), rect, 1f).asImageBitmap() }.getOrNull()
+            kotlinx.coroutines.withContext(androidx.compose.ui.platform.AndroidUiDispatcher.Main) {
+                making.remove(k)
+                if (bmp != null) made[k] = bmp
+            }
+        }
+        return null
+    }
+
+    /** Only the bevels of these pictures are kept (each card's is about a megabyte). */
+    fun keep(slides: List<Slide?>) {
+        val keys = slides.filterNotNull().map { "${it.id}#${System.identityHashCode(it.frost)}#" }
+        made.keys.filter { k -> keys.none { k.startsWith(it) } }.forEach { made.remove(it) }
+    }
+}
+
+/** How the cards' glass is drawn: its kind, how much darker the picture is (Dim the picture) and where liquid glass's bevels come
+ *  from. */
+class GlassStyle(val kind: tld.my.simpletv.GlassKind, val dim: Float, val lenses: LensCache)
+
 private val SHADE = Brush.verticalGradient(*Wallpapers.SHADE_STOPS.zip(Wallpapers.SHADE_COLORS.map { Color(it) }).toTypedArray())
 
 private fun DrawScope.drawFull(image: ImageBitmap, alpha: Float) {
@@ -72,7 +108,7 @@ private fun DrawScope.drawFull(image: ImageBitmap, alpha: Float) {
 
 /** The picture (or the plain dark gradient), and the shade at the top and bottom that keeps the clock and the row readable. */
 @Composable
-fun Background(wall: WallState, pictures: Boolean) {
+fun Background(wall: WallState, pictures: Boolean, dim: Float = 0f) {
     Box(
         Modifier.fillMaxSize().drawBehind {
             val cur = if (pictures) wall.current else null
@@ -84,6 +120,8 @@ fun Background(wall: WallState, pictures: Boolean) {
             } else {
                 prev?.let { drawFull(it.image, 1f) }
                 cur?.let { drawFull(it.image, if (prev == null) 1f else wall.fade.value) }
+                // Settings → Wallpaper → Dim the picture (the plain background is never dimmed)
+                if (dim > 0f) drawRect(Color.Black, alpha = dim)
             }
             drawRect(SHADE)
         }
@@ -98,7 +136,7 @@ fun Plate(
     wall: WallState,
     look: PlateLook,
     previousLook: PlateLook?,
-    glass: Boolean,
+    glass: GlassStyle?,
     shadow: Boolean,
     focused: Boolean = false,
     content: @Composable BoxScope.() -> Unit,
@@ -116,17 +154,29 @@ fun Plate(
                 val shape = Path().apply { addRoundRect(RoundRect(0f, 0f, size.width, size.height, CornerRadius(r))) }
                 val t = if (wall.previous == null) 1f else wall.fade.value
                 clipPath(shape) {
-                    if (glass) {
+                    if (glass != null) {
+                        // the picture behind stays still while the card grows in focus: it is drawn shrunk back by the growth
+                        val grow = 1f + 0.02f * focus
                         val dst = IntSize((1920 * density).roundToInt(), (1080 * density).roundToInt())
                         val at = IntOffset((-rect.x * density).roundToInt(), (-rect.y * density).roundToInt())
-                        wall.previous?.let { drawImage(it.frost, dstOffset = at, dstSize = dst, filterQuality = FilterQuality.Low) }
-                        wall.current?.let { drawImage(it.frost, dstOffset = at, dstSize = dst, alpha = t, filterQuality = FilterQuality.Low) }
+                        scale(1f / grow, pivot = center) {
+                            wall.previous?.let { drawImage(it.frost, dstOffset = at, dstSize = dst, filterQuality = FilterQuality.Low) }
+                            wall.current?.let { drawImage(it.frost, dstOffset = at, dstSize = dst, alpha = t, filterQuality = FilterQuality.Low) }
+                        }
+                        // liquid glass: the bent picture on the bevel, over it (it grows with the card, as the bevel does)
+                        if (glass.kind == tld.my.simpletv.GlassKind.LIQUID) {
+                            val full = IntSize(size.width.roundToInt(), size.height.roundToInt())
+                            wall.previous?.let { s -> glass.lenses.bevel(s, rect)?.let { drawImage(it, dstSize = full, filterQuality = FilterQuality.Low) } }
+                            wall.current?.let { s -> glass.lenses.bevel(s, rect)?.let { drawImage(it, dstSize = full, alpha = t, filterQuality = FilterQuality.Low) } }
+                        }
+                        if (glass.dim > 0f) drawRect(Color.Black, alpha = glass.dim)
                     }
                     val bg = if (previousLook == null) Color(look.bg) else lerp(Color(previousLook.bg), Color(look.bg), t)
                     drawRect(bg)
                     if (focus > 0f) drawRect(Color(look.focus), alpha = focus)
                 }
-                // the rim: a faint edge all round and a brighter one along the top
+                // the rim: a faint edge all round and a brighter one along the top (liquid glass has none: only the lens)
+                if (glass?.kind == tld.my.simpletv.GlassKind.LIQUID) return@drawBehind
                 val hair = density
                 drawRoundRect(Color(0x12FFFFFF), topLeft = Offset(hair / 2, hair / 2), size = Size(size.width - hair, size.height - hair),
                     cornerRadius = CornerRadius(r - hair / 2), style = Stroke(hair))

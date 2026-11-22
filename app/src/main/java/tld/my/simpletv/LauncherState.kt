@@ -69,6 +69,8 @@ class LauncherState(private val context: Context, private val scope: CoroutineSc
     var homeReset by mutableStateOf(false)
         private set
     val wall = WallState()
+    /** liquid glass's bevels for the pictures on the screen (Lens.kt) */
+    val lenses = tld.my.simpletv.ui.LensCache(scope)
     /** grows when the user answers the question about the box's pictures (the gallery looks again) */
     var photosVersion by mutableIntStateOf(0)
         private set

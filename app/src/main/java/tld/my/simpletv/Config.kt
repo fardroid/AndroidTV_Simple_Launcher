@@ -4,13 +4,22 @@ package tld.my.simpletv
 // (Simple LG launcher), so both start out looking the same.
 
 import android.content.Context
-import androidx.annotation.StringRes
 import org.json.JSONArray
 import org.json.JSONObject
 
 enum class PlateMode {
     AUTO, LIGHT, DARK;
     val label get() = when (this) { AUTO -> str(R.string.auto); LIGHT -> str(R.string.plates_light); DARK -> str(R.string.dark) }
+}
+
+enum class GlassKind {
+    FROST, LIQUID;
+    val label get() = when (this) { FROST -> str(R.string.glass_frosted); LIQUID -> str(R.string.glass_liquid) }
+}
+
+enum class DimMode {
+    OFF, NIGHT, ALWAYS;
+    val label get() = when (this) { OFF -> str(R.string.off); NIGHT -> str(R.string.at_night); ALWAYS -> str(R.string.always) }
 }
 
 enum class TileShape {
@@ -35,7 +44,9 @@ data class Config(
     val cardSize: Int = 100,
     val plates: PlateMode = PlateMode.AUTO,
     val glass: Boolean = true,
-    /** how frosted the glass is: % of its full blur (Wallpapers.frost) */
+    /** the glass's kind while it is on: FROST blurs the picture, LIQUID also bends it at the cards' edges (Lens.kt) */
+    val glassKind: GlassKind = GlassKind.FROST,
+    /** how frosted the glass is: % of its full blur (Wallpapers.frost); 0: clear glass */
     val frost: Int = 100,
     val shadows: Boolean = true,
     /** OLED care: the clock, the cards and the apps move a few pixels once a minute (Plates.shiftAt) */
@@ -45,7 +56,6 @@ data class Config(
     /** the font of all the widgets (ui/Fonts.kt), as in the webOS app */
     val clockFont: String = "inter",
     val clockWeight: Int = 400,
-    val clockColor: String = "white",
     /** the colour theme (ui/Themes.kt) */
     val theme: String = "dusk",
     val showDate: Boolean = true,
@@ -72,14 +82,20 @@ data class Config(
     val shuffle: Boolean = false,
     /** the pictures ticked in Settings → Wallpaper → Pictures (Wallpapers' ids); none: all the built-in and the user's own */
     val wallpaperPicks: List<String> = emptyList(),
+    /** the picture darkened: OFF, NIGHT (from sunset to sunrise in the weather's city, or 19:00 to 7:00) or ALWAYS */
+    val dim: DimMode = DimMode.OFF,
+    /** by how much, % (10 to 70) */
+    val dimStrength: Int = 40,
+    /** the launcher's screen saver after this many minutes without a key (0: never; one of SAVER_MINUTES) */
+    val saverMinutes: Int = 5,
 ) {
     fun toJson(): String = JSONObject().apply {
         put("language", language.name)
         put("appOrder", JSONArray(appOrder)); put("hidden", JSONArray(hidden.toList()))
         put("iconScale", iconScale); put("showLabels", showLabels); put("labelsSelectedOnly", labelsSelectedOnly); put("tileShape", tileShape.name)
         put("sideMargin", sideMargin); put("bottomMargin", bottomMargin); put("cardSize", cardSize)
-        put("plates", plates.name); put("glass", glass); put("frost", frost); put("shadows", shadows); put("pixelShift", pixelShift)
-        put("clock24", clock24); put("clockSize", clockSize); put("clockFont", clockFont); put("clockWeight", clockWeight); put("clockColor", clockColor); put("theme", theme)
+        put("plates", plates.name); put("glass", glass); put("glassKind", glassKind.name); put("frost", frost); put("shadows", shadows); put("pixelShift", pixelShift)
+        put("clock24", clock24); put("clockSize", clockSize); put("clockFont", clockFont); put("clockWeight", clockWeight); put("theme", theme)
         put("showDate", showDate); put("dateSize", dateSize)
         put("weatherOn", weatherOn); put("fahrenheit", fahrenheit)
         city?.let { put("city", JSONObject().put("name", it.name).put("lat", it.lat).put("lon", it.lon).put("detail", it.detail)) }
@@ -87,10 +103,12 @@ data class Config(
         put("newsOn", newsOn); put("newsGoogle", newsGoogle); put("newsCountry", newsCountry); put("newsFeeds", JSONArray(newsFeeds))
         put("quoteOn", quoteOn); put("updateCheck", updateCheck)
         put("wallpaperOn", wallpaperOn); put("intervalSec", intervalSec); put("shuffle", shuffle); put("wallpaperPicks", JSONArray(wallpaperPicks))
+        put("dim", dim.name); put("dimStrength", dimStrength); put("saverMinutes", saverMinutes)
     }.toString()
 
     companion object {
         val INTERVALS = listOf(10, 30, 60, 300, 900, 1800, 3600)
+        val SAVER_MINUTES = listOf(0, 2, 5, 10, 15, 30, 60)
         /** the ids of ui/Fonts.kt (kept here so the settings can be read without the UI) */
         val FONT_IDS = listOf("inter", "tv", "poppins", "oswald", "mono", "serif")
 
@@ -113,14 +131,14 @@ data class Config(
                     cardSize = o.optInt("cardSize", d.cardSize).coerceIn(60, 160),
                     plates = runCatching { PlateMode.valueOf(o.getString("plates")) }.getOrDefault(d.plates),
                     glass = o.optBoolean("glass", d.glass),
-                    frost = o.optInt("frost", d.frost).coerceIn(30, 100),
+                    glassKind = runCatching { GlassKind.valueOf(o.getString("glassKind")) }.getOrDefault(d.glassKind),
+                    frost = o.optInt("frost", d.frost).coerceIn(0, 100),
                     shadows = o.optBoolean("shadows", d.shadows),
                     pixelShift = o.optBoolean("pixelShift", d.pixelShift),
                     clock24 = o.optBoolean("clock24", d.clock24),
                     clockSize = o.optInt("clockSize", d.clockSize).coerceIn(80, 220),
                     clockFont = o.optString("clockFont", d.clockFont).let { f -> if (f in FONT_IDS) f else d.clockFont },
                     clockWeight = o.optInt("clockWeight", d.clockWeight).let { if (it in listOf(200, 300, 400, 500, 600)) it else d.clockWeight },
-                    clockColor = o.optString("clockColor", d.clockColor).let { c -> if (ClockColors.ALL.any { it.id == c }) c else d.clockColor },
                     theme = o.optString("theme", d.theme).let { t -> if (tld.my.simpletv.ui.Themes.ALL.any { it.id == t }) t else d.theme },
                     showDate = o.optBoolean("showDate", d.showDate),
                     dateSize = o.optInt("dateSize", d.dateSize).coerceIn(60, 160),
@@ -139,6 +157,9 @@ data class Config(
                     intervalSec = o.optInt("intervalSec", d.intervalSec).let { if (it in INTERVALS) it else d.intervalSec },
                     shuffle = o.optBoolean("shuffle", d.shuffle),
                     wallpaperPicks = strings("wallpaperPicks") ?: d.wallpaperPicks,
+                    dim = runCatching { DimMode.valueOf(o.getString("dim")) }.getOrDefault(d.dim),
+                    dimStrength = o.optInt("dimStrength", d.dimStrength).let { (it / 10 * 10).coerceIn(10, 70) },
+                    saverMinutes = o.optInt("saverMinutes", d.saverMinutes).let { if (it in SAVER_MINUTES) it else d.saverMinutes },
                 )
             } catch (_: Exception) { d }
         }
@@ -178,26 +199,4 @@ class Store(context: Context) {
     var wallpaperIndex: Int
         get() = prefs.getInt("wallpaperIndex", 0)
         set(v) = prefs.edit().putInt("wallpaperIndex", v).apply()
-}
-
-/** The colours the clock can have (Settings → Clock → Colour). A port of src/lib/clockcolor.ts. */
-data class ClockColor(val id: String, @StringRes val name: Int, val colors: List<Long>, val dark: Boolean = false) {
-    val label get() = str(name)
-}
-
-object ClockColors {
-    val ALL = listOf(
-        ClockColor("white", R.string.white, listOf(0xFFF2F2F2)),
-        ClockColor("warm", R.string.warm_white, listOf(0xFFFFE9C7)),
-        ClockColor("blue", R.string.ice_blue, listOf(0xFFC4E2FF)),
-        ClockColor("amber", R.string.amber, listOf(0xFFFFB74D)),
-        ClockColor("grey", R.string.grey, listOf(0xFF9AA0A6)),
-        ClockColor("charcoal", R.string.dark_grey, listOf(0xFF3C4043), dark = true),
-        ClockColor("black", R.string.black, listOf(0xFF0A0A0A), dark = true),
-        ClockColor("ember", R.string.gradient_ember_red_to_gold, listOf(0xFFD62839, 0xFFF08C1A)),
-        ClockColor("ocean", R.string.gradient_ocean_blue_to_teal, listOf(0xFF1E4FD8, 0xFF19C6D8), dark = true),
-        ClockColor("dusk", R.string.gradient_dusk_violet_to_coral, listOf(0xFF6A2FC9, 0xFFF2634F), dark = true),
-    )
-
-    fun of(id: String) = ALL.firstOrNull { it.id == id } ?: ALL[0]
 }

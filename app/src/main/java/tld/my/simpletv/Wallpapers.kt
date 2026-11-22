@@ -95,13 +95,20 @@ object Wallpapers {
     }
 
     /** The glass: a quarter-size copy blurred (three box passes, close to a 7 px Gaussian at this size, as the webOS app's
-     *  `blur(7px)`), with the shade that lies over the screen (Shade in ui/Wallpaper.kt) drawn on top. `strength` (30 to 100)
-     *  narrows the blur: less frost lets more of the picture through. */
+     *  `blur(7px)`), with the shade that lies over the screen (Shade in ui/Wallpaper.kt) drawn on top. `strength` (0 to 100)
+     *  narrows the blur: less frost lets more of the picture through, none is clear glass. */
     private fun frost(screen: Bitmap, strength: Int): Bitmap {
+        // Frost off: clear glass, the picture itself at its own size (a quarter-size copy would look soft under the card)
+        if (strength <= 0) {
+            val clear = screen.copy(Bitmap.Config.ARGB_8888, true)
+            val shade = Paint().apply { shader = LinearGradient(0f, 0f, 0f, clear.height.toFloat(), SHADE_COLORS, SHADE_STOPS, Shader.TileMode.CLAMP) }
+            Canvas(clear).drawRect(0f, 0f, clear.width.toFloat(), clear.height.toFloat(), shade)
+            return clear
+        }
         val small = Bitmap.createScaledBitmap(screen, FROST_W, FROST_H, true)
         val px = IntArray(FROST_W * FROST_H)
         small.getPixels(px, 0, FROST_W, 0, 0, FROST_W, FROST_H)
-        val r = max(1, (6 * strength.coerceIn(30, 100) / 100f).roundToInt())
+        val r = max(1, (6 * strength.coerceIn(10, 100) / 100f).roundToInt())
         repeat(3) { boxBlur(px, FROST_W, FROST_H, r) }
         val out = small.copy(Bitmap.Config.ARGB_8888, true)
         if (out !== small) small.recycle()
