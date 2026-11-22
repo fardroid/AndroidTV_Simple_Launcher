@@ -164,7 +164,9 @@ fun Plate(
     )
 }
 
-const val PLATE_RADIUS = 36f
+/** The cards' corners: 60 px (36 before 1.3.1) with every kind of glass, so that liquid glass's bevel, never wider than the
+ *  corner's radius, can be wide, and the cards keep their shape when the glass is changed (as Simple LG launcher 2.2.7). */
+const val PLATE_RADIUS = 60f
 
 /** The plate of a card (or a banner) drawn behind what it holds: the glass, the dimming, its colour, the focus layer and the rim.
  *  `at`: where it is on the screen now (design px), which lines the glass up with the picture behind; `rest`: where it rests, for
@@ -207,8 +209,9 @@ fun Modifier.plate(at: () -> Rect, rest: Rect, wall: WallState, look: PlateLook,
                 if (glass.dim > 0f) drawRect(Color.Black, alpha = glass.dim)
             }
             // the card's shadow falls on the picture behind it, which shows through the glass: under the card too, not only
-            // round it (a light card in a dark frame looked lit from inside)
-            if (shadow) shadowOnly(PLATE_RADIUS, shadowBlur, shadowDy, shadowColor)
+            // round it (a light card in a dark frame looked lit from inside). Even all over, as dark as at the card's sides: a
+            // shadow thinning out towards the edges, as a real one does, made the edges look lit, like sanded glass
+            if (shadow) drawRect(Color.Black, alpha = shadowColor.alpha * 0.5f)
             val bg = if (previousLook == null) Color(look.bg) else lerp(Color(previousLook.bg), Color(look.bg), t)
             drawRect(bg)
             if (f > 0f) drawRect(Color(look.focus), alpha = f)

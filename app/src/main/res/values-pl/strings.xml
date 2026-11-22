@@ -143,7 +143,7 @@
     <string name="text_size">Rozmiar tekstu</string>
     <string name="all_the_text_on_the_weather">Cały tekst na kartach pogody i kalendarza.</string>
     <string name="card_colour">Tło widżetów</string>
-    <string name="auto_all_the_cards_turn_light">Auto: wszystkie karty stają się jasne lub ciemne w zależności od obrazu w tle, aby tekst pozostał czytelny na każdej z nich.</string>
+    <string name="auto_all_the_cards_turn_light">Jasne lub ciemne, w odcieniu motywu kolorów; neutralne: bez koloru, samo szkło. Auto: wszystkie widżety razem stają się jasne lub ciemne zależnie od obrazu za nimi, aby tekst był czytelny na każdym.</string>
     <string name="frosted_glass">Szronione szkło</string>
     <string name="the_cards_blur_the_picture_behind">Karty rozmywają obraz znajdujący się za nimi.</string>
     <string name="frost">Matowość</string>
@@ -366,4 +366,5 @@
     <string name="collection_space">Kosmos</string>
     <string name="collection_abstract">Abstrakcje</string>
     <string name="wallpaper_downloads">Tapety pobierają się w tle: %1$s</string>
+    <string name="plates_neutral">Neutralne</string>
 </resources>

@@ -144,7 +144,7 @@
     <string name="text_size">Text size</string>
     <string name="all_the_text_on_the_weather">All the text on the weather and calendar cards.</string>
     <string name="card_colour">Card background</string>
-    <string name="auto_all_the_cards_turn_light">Auto: all the cards turn light or dark together, depending on the picture behind them, so the text stays readable on each.</string>
+    <string name="auto_all_the_cards_turn_light">Light or dark, in the hue of the colour theme; neutral: no colour, only the glass. Auto: all the cards turn light or dark together, depending on the picture behind them, so the text stays readable on each.</string>
     <string name="frosted_glass">Frosted glass</string>
     <string name="the_cards_blur_the_picture_behind">The cards blur the picture behind them.</string>
     <string name="frost">Frost</string>
@@ -353,4 +353,5 @@
     <string name="collection_space">Space</string>
     <string name="collection_abstract">Abstract</string>
     <string name="wallpaper_downloads">The wallpaper downloads in the background: %1$s</string>
+    <string name="plates_neutral">Neutral</string>
 </resources>

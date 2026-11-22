@@ -143,7 +143,7 @@
     <string name="text_size">글자 크기</string>
     <string name="all_the_text_on_the_weather">날씨와 캘린더 카드의 모든 글자.</string>
     <string name="card_colour">위젯 배경</string>
-    <string name="auto_all_the_cards_turn_light">자동: 모든 카드가 뒤의 이미지에 따라 함께 밝아지거나 어두워져, 어느 카드에서나 글자가 잘 보입니다.</string>
+    <string name="auto_all_the_cards_turn_light">색상 테마의 색조로 밝게 또는 어둡게. 중립: 색 없이 유리만. 자동: 뒤의 사진에 따라 모든 위젯이 함께 밝거나 어두워져 어느 위젯에서나 글자가 잘 읽힙니다.</string>
     <string name="frosted_glass">젖빛 유리</string>
     <string name="the_cards_blur_the_picture_behind">카드가 뒤의 이미지를 흐리게 합니다.</string>
     <string name="frost">반투명 정도</string>
@@ -345,4 +345,5 @@
     <string name="collection_space">우주</string>
     <string name="collection_abstract">추상</string>
     <string name="wallpaper_downloads">배경화면을 백그라운드에서 다운로드 중: %1$s</string>
+    <string name="plates_neutral">중립</string>
 </resources>

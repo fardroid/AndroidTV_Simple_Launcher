@@ -143,7 +143,7 @@
     <string name="text_size">Taille du texte</string>
     <string name="all_the_text_on_the_weather">Tout le texte des cartes météo et calendrier.</string>
     <string name="card_colour">Fond des widgets</string>
-    <string name="auto_all_the_cards_turn_light">Auto : toutes les cartes deviennent claires ou sombres ensemble, selon l’image derrière elles, pour que le texte reste lisible sur chacune.</string>
+    <string name="auto_all_the_cards_turn_light">Clair ou sombre, dans la teinte du thème de couleur ; neutre : sans couleur, seulement le verre. Auto : tous les widgets deviennent clairs ou sombres ensemble selon l\'image derrière eux, pour que le texte reste lisible sur chacun.</string>
     <string name="frosted_glass">Verre dépoli</string>
     <string name="the_cards_blur_the_picture_behind">Les cartes floutent l’image derrière elles.</string>
     <string name="frost">Dépoli</string>
@@ -357,4 +357,5 @@
     <string name="collection_space">Espace</string>
     <string name="collection_abstract">Abstrait</string>
     <string name="wallpaper_downloads">Les fonds d\'écran se téléchargent en arrière-plan : %1$s</string>
+    <string name="plates_neutral">Neutre</string>
 </resources>

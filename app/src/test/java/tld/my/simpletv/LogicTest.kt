@@ -118,6 +118,7 @@ class LogicTest {
         assertEquals(0x29939ABDL, Plates.looks(PlateMode.AUTO, dark, board).bg)
         assertEquals(Plates.dark(), Plates.looks(PlateMode.AUTO, light, board))
         assertEquals(Plates.dark(), Plates.looks(PlateMode.AUTO, FloatArray(16 * 9) { 0.4f }, board))
+        assertEquals(0L, Plates.looks(PlateMode.NEUTRAL, light, board).bg)      // neutral: no colour, only the glass
         // one bright spot behind any plate makes all of them dark, the same colour
         val half = FloatArray(Plates.MAP_W * Plates.MAP_H) { i -> if (i % Plates.MAP_W < Plates.MAP_W / 2) 1f else 0f }
         assertEquals(Plates.dark(), Plates.looks(PlateMode.AUTO, half, board))

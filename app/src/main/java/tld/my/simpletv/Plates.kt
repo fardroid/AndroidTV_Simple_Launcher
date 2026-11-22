@@ -237,6 +237,8 @@ object Plates {
     fun looks(mode: PlateMode, map: FloatArray?, board: Board, plate: Long = DEFAULT_PLATE, mid: Long = DEFAULT_MID): PlateLook = when (mode) {
         PlateMode.LIGHT -> light(mid)
         PlateMode.DARK -> dark(plate)
+        // no colour, only the glass (the card in focus lights up as on the others)
+        PlateMode.NEUTRAL -> PlateLook(0L, argb(0.10f, 255, 255, 255))
         PlateMode.AUTO -> if (map == null) light(mid) else lookFor(lookRects(board).maxOfOrNull { regionBrightness(map, it) } ?: 0f, plate, mid)
     }
 

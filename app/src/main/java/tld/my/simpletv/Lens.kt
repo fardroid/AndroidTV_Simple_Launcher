@@ -26,11 +26,13 @@ import kotlin.math.tan
 object Lens {
     /** The shape: the bevel's width (never more than the corner's radius) and the glass's thickness, in design px; how much the
      *  colours part (0-1); the index of refraction (archisvaze/liquid-glass's default, 3). */
-    const val BEVEL = 35f
-    const val THICKNESS = 60f
+    // archisvaze/liquid-glass's default, picked on a page of sliders (as Simple LG launcher 2.2.7): the cards' corners 60, a bevel
+    // as wide (kept a pixel under), 80 thick, index 3
+    const val BEVEL = 60f
+    const val THICKNESS = 80f
     const val DISPERSION = 1f
     const val IOR = 3f
-    const val RADIUS = 36f
+    const val RADIUS = tld.my.simpletv.ui.PLATE_RADIUS
     private const val SAMPLES = 512
 
     /** The surface over the bevel: a squircle, 0 at the rim, 1 where the flat top starts. */

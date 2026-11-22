@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.3.1
+
+In step with [Simple LG launcher](https://github.com/fardroid/Simple-LG-launcher) 2.2.7.
+
+- **Liquid glass with wider, stronger edges**, picked on a page of sliders: archisvaze/liquid-glass's default. The cards' corners
+  now round by 60 px instead of 36, with every kind of glass, so that liquid glass's bevel, never wider than the corner's radius,
+  can be 60 px wide; the glass is 80 px thick (was 60). The bending is plain to see now, where it was barely there.
+- **Card background: Neutral** (Settings → Appearance → *Card background*): no colour, only the glass.
+- **The shadow under the cards is even**, as dark as it is at the cards' sides: one that thinned out towards the edges, as a real
+  shadow does, made the edges look lit, like sanded glass.
+
 ## 1.3.0
 
 In step with [Simple LG launcher](https://github.com/fardroid/Simple-LG-launcher) 2.2.6, where it applies to Android.
